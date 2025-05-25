@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Активный отдых зимой в Кузбассе: 
+    прокат лыж, коньков и плюшек на базе отдыха «Победа», Анжеро-Судженск.">
+
+    <link rel="stylesheet" href="../css/rentStyle.css" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <script src="https://code.jquery.com/jquery-3.6.3.js" integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM=" 
+    crossorigin="anonymous"></script>
+    
+    <script src="../js/indexJS.js"></script>
+    
+    <link rel="icon" type="image/png" href="../forFavicon/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="../forFavicon/favicon.svg" />
+    <link rel="shortcut icon" href="../forFavicon/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="../forFavicon/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="Pobeda" />
+    <link rel="manifest" href="../forFavicon/site.webmanifest" />
+
+    <title>Прокат инвентаря</title>
+</head>
+<body>
+    <header class="header">
+        <div class="container__header">
+            <div class="header__body">
+                <a href="../index.html" class="header__logo">
+                    <img src="../images/логоДомик.jpg" alt="Логотип базы отдыха" title="Логотип базы отдыха">
+                </a>
+                <div class="header__burger">
+                    <span></span>
+                </div>
+                <nav class="header__menu">
+                    <ul class="header__list">
+                        <li><a href="../index.html" class="header__link slick-element">Главная</a></li>
+                        <li><a href="../pages/rent.html" class="header__link slick-element">Прокат</a></li>
+                        <li><a href="../pages/book.html" class="header__link slick-element">Бронирование</a></li>
+                        <li><a href="../pages/cafe.html" class="header__link slick-element">Кафе</a></li>
+                        <li><a href="../pages/karaoke.html" class="header__link slick-element">Караоке-бар</a></li>
+                        <li><a href="../pages/profile.html" class="header__link slick-element">Личный кабинет</a></li>
+                    </ul>
+                    <div class="worktime hburger-active">
+                        Время работы: 9:00 – 23:00
+                    </div>
+                    <a class="workphone hburger-active" href="tel:+71234567890">
+                        +7-123-456-78-90
+                    </a>
+                </nav>
+                <div class="grid__works">
+                    <div class="header__workphone">
+                        Время работы:
+                    </div>
+                    <div class="header__worktime">
+                        9:00 – 23:00
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <main class="main__content">
+        <div class="container__main1">
+            <div class="rent__conditionals__container">
+                <div class="rent__conditionals__items">
+                    <div class="rent__title">Правила пользования услугами проката</div>
+                    <div class="rent__timetable">Работаем ежедневно с 11:00 до 20:00</div>
+                </div>
+
+                <div class="rent__rules__container">
+                    <div class="rent__rules__left">
+                        <div class="rent__rules__left__inner rent__inner">
+                            Пожалуйста, ознакомьтесь с правилами пользования услугами проката перед тем, как воспользоваться нашими услугами:
+                        </div>
+                        <ul class="rent__rules__left__list rent__list">
+                            <li class="rent__rules__left__item">Возврат арендованного оборудования в срок</li>
+                            <li class="rent__rules__left__item">Запрещено передавать арендованное оборудование третьим лицам</li>
+                            <li class="rent__rules__left__item">Не использовать оборудование с порчей</li>
+                            <li class="rent__rules__left__item">Обязательное страхование арендованного оборудования</li>
+                            <li class="rent__rules__left__item">Соблюдение правил безопасности</li>
+                        </ul>
+                    </div>
+                    <div class="rent__rules__right">
+                        <div class="rent__rules__right__inner rent__inner">
+                            Для получения спортивного инвентаря в аренду, посетителю необходимо оставить в залог что-либо из перечисленного:
+                        </div>
+                        <ul class="rent__rules__right__list rent__list">
+                            <li class="rent__rules__right__item">Действующий загранпаспорт</li>
+                            <li class="rent__rules__right__item">Свидетельство о регистрации транспортного средства или водительское удостоверение</li>
+                            <li class="rent__rules__right__item">Паспорт РФ (по согласию)</li>
+                            <li class="rent__rules__right__item">Пенсионное удостоверение</li>
+                            <li class="rent__rules__right__item">Студенческий билет</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container__main">
+            <div class="container-rent">
+                <div class="rent-item it-1"><img src="../images/rentSkates.jpg" 
+                  class="rent-image img-1" alt="">
+                  <h2>Коньки</h2>
+                  <div class="rent__text__description">Все размеры, хоккейные и фигурные.</div>
+                  <div class="rent-info skates">
+                    <div class="skates-check">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="img-check" viewBox="0 0 512 512">
+                        <path d="M288 32c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 208c0 8.8-7.2 16-16 16s-16-7.2-16-16l0-176c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 272c0 1.5 0 3.1 .1 4.6L67.6 283c-16-15.2-41.3-14.6-56.6 1.4s-14.6 41.3 1.4 56.6L124.8 448c43.1 41.1 100.4 64 160 64l19.2 0c97.2 0 176-78.8 176-176l0-208c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16s-16-7.2-16-16l0-176c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 176c0 8.8-7.2 16-16 16s-16-7.2-16-16l0-208z"/>
+                      </svg>
+                    </div>
+        
+                    <div class="skates-time">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="img-time" viewBox="0 0 512 512">
+                        <path d="M464 256A208 208 0 1 1 48 256a208 208 0 1 1 416 0zM0 256a256 256 0 1 0 512 0A256 256 0 1 0 0 256zM232 120l0 136c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2 280 120c0-13.3-10.7-24-24-24s-24 10.7-24 24z"/>
+                      </svg>
+                    </div>
+        
+                    <div class="skates-ruble">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="img-ruble" viewBox="0 0 384 512">
+                        <path d="M96 32C78.3 32 64 46.3 64 64l0 192-32 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l32 0 0 32-32 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l32 0 0 32c0 17.7 14.3 32 32 32s32-14.3 32-32l0-32 160 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-160 0 0-32 112 0c79.5 0 144-64.5 144-144s-64.5-144-144-144L96 32zM240 256l-112 0 0-160 112 0c44.2 0 80 35.8 80 80s-35.8 80-80 80z"/>
+                      </svg>
+                    </div>
+        
+                    <div class="rent-self">
+                      <span class="rentness">Прокат</span>
+                    </div>
+                    <div class="rent-time">
+                      <span class="time">30 мин.</span>
+                    </div>
+                    <div class="rent-cost">
+                      <span class="cost">100</span>
+                    </div>
+        
+                    <div class="rent-self">
+                      <span class="rentness">Прокат</span>
+                    </div>
+                    <div class="rent-time">
+                      <span class="time">1 ч.</span>
+                    </div>
+                    <div class="rent-cost">
+                      <span class="cost">150</span>
+                    </div>
+        
+                    <div class="rent-self">
+                      <span class="rentness">Свои</span>
+                    </div>
+                    <div class="rent-time">
+                      <span class="time time__infinity">∞</span>
+                    </div>
+                    <div class="rent-cost">
+                      <span class="cost">Бесплатно</span>
+                    </div>
+                  </div>
+                </div>
+        
+                <div class="rent-item it-2">
+                    <img src="../images/rentSki.jpg" class="rent-image img-2" alt="">
+                    <h2>Лыжи</h2>
+                    <div class="rent__text__description">Все размеры. В комплектацию также входят палки.</div>
+        
+                  <div class="rent-info ski">
+                    <div class="ski-check">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="img-check" viewBox="0 0 512 512">
+                      <path d="M288 32c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 208c0 8.8-7.2 16-16 16s-16-7.2-16-16l0-176c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 272c0 1.5 0 3.1 .1 4.6L67.6 283c-16-15.2-41.3-14.6-56.6 1.4s-14.6 41.3 1.4 56.6L124.8 448c43.1 41.1 100.4 64 160 64l19.2 0c97.2 0 176-78.8 176-176l0-208c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16s-16-7.2-16-16l0-176c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 176c0 8.8-7.2 16-16 16s-16-7.2-16-16l0-208z"/>
+                      </svg>
+                    </div>
+        
+                    <div class="ski-time">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="img-time" viewBox="0 0 512 512">
+                        <path d="M464 256A208 208 0 1 1 48 256a208 208 0 1 1 416 0zM0 256a256 256 0 1 0 512 0A256 256 0 1 0 0 256zM232 120l0 136c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2 280 120c0-13.3-10.7-24-24-24s-24 10.7-24 24z"/>
+                      </svg>
+                    </div>
+        
+                    <div class="ski-ruble">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="img-ruble" viewBox="0 0 384 512">
+                        <path d="M96 32C78.3 32 64 46.3 64 64l0 192-32 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l32 0 0 32-32 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l32 0 0 32c0 17.7 14.3 32 32 32s32-14.3 32-32l0-32 160 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-160 0 0-32 112 0c79.5 0 144-64.5 144-144s-64.5-144-144-144L96 32zM240 256l-112 0 0-160 112 0c44.2 0 80 35.8 80 80s-35.8 80-80 80z"/>
+                      </svg>
+                    </div>
+        
+                    <div class="rent-self">
+                      <span class="rentness">Прокат</span>
+                    </div>
+                    <div class="rent-time">
+                      <span class="time">1 ч.</span>
+                    </div>
+                    <div class="rent-cost">
+                      <span class="cost">150</span>
+                    </div>
+        
+                    <div class="rent-self">
+                      <span class="rentness">Свои</span>
+                    </div>
+                    <div class="rent-time">
+                      <span class="time time__infinity">∞</span>
+                    </div>
+                    <div class="rent-cost">
+                      <span class="cost">Бесплатно</span>
+                    </div>
+                  </div>
+                </div>
+        
+                <div class="rent-item it-3"><img src="../images/rentSnowWalk2.jpg" 
+                  class="rent-image img-3" alt="">
+                  <h2>Снегоход</h2>
+                  
+                  <div class="rent-info snowwalk">
+                    <div class="snowwalk-man">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="img-person" viewBox="0 0 320 512">
+                        <path d="M112 48a48 48 0 1 1 96 0 48 48 0 1 1 -96 0zm40 304l0 128c0 17.7-14.3 32-32 32s-32-14.3-32-32l0-223.1L59.4 304.5c-9.1 15.1-28.8 20-43.9 10.9s-20-28.8-10.9-43.9l58.3-97c17.4-28.9 48.6-46.6 82.3-46.6l29.7 0c33.7 0 64.9 17.7 82.3 46.6l58.3 97c9.1 15.1 4.2 34.8-10.9 43.9s-34.8 4.2-43.9-10.9L232 256.9 232 480c0 17.7-14.3 32-32 32s-32-14.3-32-32l0-128-16 0z"/>
+                      </svg>
+                    </div>
+        
+                    <div class="snowwalk-road">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="img-road" viewBox="0 0 576 512">
+                        <path d="M256 32l-74.8 0c-27.1 0-51.3 17.1-60.3 42.6L3.1 407.2C1.1 413 0 419.2 0 425.4C0 455.5 24.5 480 54.6 480L256 480l0-64c0-17.7 14.3-32 32-32s32 14.3 32 32l0 64 201.4 0c30.2 0 54.6-24.5 54.6-54.6c0-6.2-1.1-12.4-3.1-18.2L455.1 74.6C446 49.1 421.9 32 394.8 32L320 32l0 64c0 17.7-14.3 32-32 32s-32-14.3-32-32l0-64zm64 192l0 64c0 17.7-14.3 32-32 32s-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32s32 14.3 32 32z"/>
+                      </svg>
+                    </div>
+        
+                    <div class="snowwalk-ruble">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="img-ruble" viewBox="0 0 384 512">
+                        <path d="M96 32C78.3 32 64 46.3 64 64l0 192-32 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l32 0 0 32-32 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l32 0 0 32c0 17.7 14.3 32 32 32s32-14.3 32-32l0-32 160 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-160 0 0-32 112 0c79.5 0 144-64.5 144-144s-64.5-144-144-144L96 32zM240 256l-112 0 0-160 112 0c44.2 0 80 35.8 80 80s-35.8 80-80 80z"/>
+                      </svg>
+                    </div>
+        
+        
+                    <div class="rent-man">
+                      <span class="man-name">Взрослый</span>
+                    </div>
+        
+                    <div class="rent-road">
+                      <span class="road">1 км</span>
+                    </div>
+                    <div class="rent-cost">
+                      <span class="cost">300</span>
+                    </div>
+        
+                    <div class="rent-road">
+                      <span class="road">2.5 км</span>
+                    </div>
+                    <div class="rent-cost">
+                      <span class="cost">400</span>
+                    </div>
+        
+                    <div class="rent-litman">
+                      <span class="man-name">Ребенок</span>
+                    </div>
+        
+                    <div class="rent-road">
+                      <span class="road">1 км</span>
+                    </div>
+                    <div class="rent-cost">
+                      <span class="cost">200</span>
+                    </div>
+        
+                    <div class="rent-road">
+                      <span class="road">2.5 км</span>
+                    </div>
+                    <div class="rent-cost">
+                      <span class="cost">300</span>
+                    </div>
+                  </div>
+                </div>
+        
+                <div class="rent-item it-4"><img src="../images/rentTube1place.jpg" 
+                  class="rent-image img-4" alt="">
+                  <h2>Плюшка 1-местная</h2>
+        
+                  <div class="rent-info tube1">
+                    <div class="tube1-check">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="img-check" viewBox="0 0 512 512">
+                        <path d="M288 32c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 208c0 8.8-7.2 16-16 16s-16-7.2-16-16l0-176c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 272c0 1.5 0 3.1 .1 4.6L67.6 283c-16-15.2-41.3-14.6-56.6 1.4s-14.6 41.3 1.4 56.6L124.8 448c43.1 41.1 100.4 64 160 64l19.2 0c97.2 0 176-78.8 176-176l0-208c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16s-16-7.2-16-16l0-176c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 176c0 8.8-7.2 16-16 16s-16-7.2-16-16l0-208z"/>
+                      </svg>
+                    </div>
+        
+                    <div class="tube1-time">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="img-time" viewBox="0 0 512 512">
+                        <path d="M464 256A208 208 0 1 1 48 256a208 208 0 1 1 416 0zM0 256a256 256 0 1 0 512 0A256 256 0 1 0 0 256zM232 120l0 136c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2 280 120c0-13.3-10.7-24-24-24s-24 10.7-24 24z"/>
+                      </svg>
+                    </div>
+        
+                    <div class="tube1-ruble">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="img-ruble" viewBox="0 0 384 512">
+                        <path d="M96 32C78.3 32 64 46.3 64 64l0 192-32 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l32 0 0 32-32 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l32 0 0 32c0 17.7 14.3 32 32 32s32-14.3 32-32l0-32 160 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-160 0 0-32 112 0c79.5 0 144-64.5 144-144s-64.5-144-144-144L96 32zM240 256l-112 0 0-160 112 0c44.2 0 80 35.8 80 80s-35.8 80-80 80z"/>
+                      </svg>
+                    </div>
+        
+                    <div class="rent-self">
+                      <span class="rentness">Прокат</span>
+                    </div>
+                    <div class="rent-time">
+                      <span class="time">30 мин.</span>
+                    </div>
+                    <div class="rent-cost">
+                      <span class="cost">100</span>
+                    </div>
+        
+                    <div class="rent-self">
+                      <span class="rentness">Прокат</span>
+                    </div>
+                    <div class="rent-time">
+                      <span class="time">1 ч.</span>
+                    </div>
+                    <div class="rent-cost">
+                      <span class="cost">150</span>
+                    </div>
+        
+                    <div class="rent-self">
+                      <span class="rentness">Своя</span>
+                    </div>
+                    <div class="rent-time">
+                      <span class="time time__infinity">∞</span>
+                    </div>
+                    <div class="rent-cost">
+                      <span class="cost">Бесплатно</span>
+                    </div>
+                  </div>
+        
+                </div>
+                <div class="rent-item it-5"><img src="../images/rentTube2place.jpg" 
+                  class="rent-image img-5" alt="">
+                  <h2>Плюшка 2-местная</h2>
+                  
+                  <div class="rent-info tube2">            
+                    <div class="tube2-check"><svg xmlns="http://www.w3.org/2000/svg" class="img-check" viewBox="0 0 512 512">
+                      <path d="M288 32c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 208c0 8.8-7.2 16-16 16s-16-7.2-16-16l0-176c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 272c0 1.5 0 3.1 .1 4.6L67.6 283c-16-15.2-41.3-14.6-56.6 1.4s-14.6 41.3 1.4 56.6L124.8 448c43.1 41.1 100.4 64 160 64l19.2 0c97.2 0 176-78.8 176-176l0-208c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16s-16-7.2-16-16l0-176c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 176c0 8.8-7.2 16-16 16s-16-7.2-16-16l0-208z"/>
+                    </svg>
+                    </div>
+        
+                    <div class="tube2-time">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="img-time" viewBox="0 0 512 512">
+                        <path d="M464 256A208 208 0 1 1 48 256a208 208 0 1 1 416 0zM0 256a256 256 0 1 0 512 0A256 256 0 1 0 0 256zM232 120l0 136c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2 280 120c0-13.3-10.7-24-24-24s-24 10.7-24 24z"/>
+                      </svg>
+                    </div>
+        
+                    <div class="tube2-ruble">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="img-ruble" viewBox="0 0 384 512">
+                        <path d="M96 32C78.3 32 64 46.3 64 64l0 192-32 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l32 0 0 32-32 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l32 0 0 32c0 17.7 14.3 32 32 32s32-14.3 32-32l0-32 160 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-160 0 0-32 112 0c79.5 0 144-64.5 144-144s-64.5-144-144-144L96 32zM240 256l-112 0 0-160 112 0c44.2 0 80 35.8 80 80s-35.8 80-80 80z"/>
+                      </svg>
+                    </div>
+        
+                    <div class="rent-self">
+                      <span class="rentness">Прокат</span>
+                    </div>
+                    <div class="rent-time">
+                      <span class="time">30 мин.</span>
+                    </div>
+                    <div class="rent-cost">
+                      <span class="cost">200</span>
+                    </div>
+        
+                    <div class="rent-self">
+                      <span class="rentness">Прокат</span>
+                    </div>
+                    <div class="rent-time">
+                      <span class="time">1 ч.</span>
+                    </div>
+                    <div class="rent-cost">
+                      <span class="cost">300</span>
+                    </div>
+        
+                    <div class="rent-self">
+                      <span class="rentness">Своя</span>
+                    </div>
+                    <div class="rent-time">
+                      <span class="time time__infinity">∞</span>
+                    </div>
+                    <div class="rent-cost">
+                      <span class="cost">Бесплатно</span>
+                    </div>
+                  </div>
+        
+                </div>
+                <div class="rent-item it-6"><img src="../images/rentTube3place.jpg" 
+                  class="rent-image img-6" alt="">
+                  <h2>Плюшка 3-местная</h2>
+                  <div class="rent-info tube2">
+                    <div class="tube3-check">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="img-check" viewBox="0 0 512 512">
+                        <path d="M288 32c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 208c0 8.8-7.2 16-16 16s-16-7.2-16-16l0-176c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 272c0 1.5 0 3.1 .1 4.6L67.6 283c-16-15.2-41.3-14.6-56.6 1.4s-14.6 41.3 1.4 56.6L124.8 448c43.1 41.1 100.4 64 160 64l19.2 0c97.2 0 176-78.8 176-176l0-208c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16s-16-7.2-16-16l0-176c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 176c0 8.8-7.2 16-16 16s-16-7.2-16-16l0-208z"/>
+                      </svg>
+                    </div>
+        
+                    <div class="tube3-time">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="img-time" viewBox="0 0 512 512">
+                        <path d="M464 256A208 208 0 1 1 48 256a208 208 0 1 1 416 0zM0 256a256 256 0 1 0 512 0A256 256 0 1 0 0 256zM232 120l0 136c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2 280 120c0-13.3-10.7-24-24-24s-24 10.7-24 24z"/>
+                      </svg>
+                    </div>
+        
+                    <div class="tube3-ruble">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="img-ruble" viewBox="0 0 384 512">
+                        <path d="M96 32C78.3 32 64 46.3 64 64l0 192-32 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l32 0 0 32-32 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l32 0 0 32c0 17.7 14.3 32 32 32s32-14.3 32-32l0-32 160 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-160 0 0-32 112 0c79.5 0 144-64.5 144-144s-64.5-144-144-144L96 32zM240 256l-112 0 0-160 112 0c44.2 0 80 35.8 80 80s-35.8 80-80 80z"/>
+                      </svg>
+                    </div>
+        
+                    <div class="rent-self">
+                      <span class="rentness">Прокат</span>
+                    </div>
+                    <div class="rent-time">
+                      <span class="time">30 мин.</span>
+                    </div>
+                    <div class="rent-cost">
+                      <span class="cost">300</span>
+                    </div>
+        
+                    <div class="rent-self">
+                      <span class="rentness">Прокат</span>
+                    </div>
+                    <div class="rent-time">
+                      <span class="time">1 ч.</span>
+                    </div>
+                    <div class="rent-cost">
+                      <span class="cost">500</span>
+                    </div>
+        
+                    <div class="rent-self">
+                      <span class="rentness">Своя</span>
+                    </div>
+                    <div class="rent-time">
+                      <span class="time time__infinity">∞</span>
+                    </div>
+                    <div class="rent-cost">
+                      <span class="cost">Бесплатно</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+        </div>
+    </main>
+    <footer class="footer">
+        <div class="container__main footer__container">
+            <!-- <ul class="footer__menu">
+                <li class="footer__menu-item"><a href="./pages/rent.html" class="footer__menu-link">Прокат</a></li>
+                <li class="footer__menu-item"><a href="./pages/book.html" class="footer__menu-link">Бронирование</a></li>
+                <li class="footer__menu-item"><a href="./pages/cafe.html" class="footer__menu-link">Кафе</a></li>
+                <li class="footer__menu-item"><a href="./pages/karaoke.html" class="footer__menu-link">Караоке-бар</a></li>
+                <li class="footer__menu-item"><a href="./pages/profile.html" class="footer__menu-link">Личный кабинет</a></li>
+            </ul> -->
+            <div class="footer__wrapper">
+                <div class="footer__contacts">
+                    <div class="footer__contacts-item footer__contacts-item--address">
+                        <div class="footer__contacts-address-container">
+                            <div class="footer__contacts-address">
+                                <span class="visually-hidden">Адрес:</span>
+                                <span class='material-icons gps_fixed'>gps_fixed</span>
+                                652470, 
+                                <span class="text-address">Кемеровская область - Кузбасс,</span>
+                                <span class="text-address">г. Анжеро-Судженск,</span>
+                                <span class="text-address">начало ул. Хвойной,</span>
+                                <span class="text-address"></span>
+                            </div>
+                            <div class="footer__contacts-coords">
+                                <span class="visually-hidden">Координаты:</span>
+                                <a href="https://yandex.ru/maps/-/CHEiVRjq" class="footer__contacts-link" rel="noopener nofollow" target="_blank">56.074652, 85.971829</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="footer__contacts-item footer__contacts-item--phone">
+                        <div class="footer__contacts-phone">
+                            <span class='material-icons smartphone-icon'>smartphone</span>
+                            <a href="tel:+71234567890" class="footer__contacts-link" target="_blank">+7 123 456 78 90</a>
+                        </div>
+                    </div>
+                    <div class="footer__contacts-item footer__contacts-item--email">
+                        <span class='material-icons email-icon'>email</span>
+                        <a href="mailto:info@pobedabase.ru" class="footer__contacts-link" target="_blank">info@pobedabase.ru</a>
+                        <div class="footer__socials">
+                            <a href="https://vk.com/b.pobeda" class="social__item icon-vk" 
+                            target="_blank" rel="noreferrer" aria-label="Ссылка на группу во Вконтакте">
+                                <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 576 512" height="30" width="30" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M545 117.7c3.7-12.5 0-21.7-17.8-21.7h-58.9c-15 0-21.9 7.9-25.6 16.7 0 0-30 73.1-72.4 120.5-13.7 13.7-20 18.1-27.5 18.1-3.7 
+                                    0-9.4-4.4-9.4-16.9V117.7c0-15-4.2-21.7-16.6-21.7h-92.6c-9.4 0-15 7-15 13.5 0 14.2 21.2 17.5 23.4 57.5v86.8c0 19-3.4 22.5-10.9 22.5-20 
+                                    0-68.6-73.4-97.4-157.4-5.8-16.3-11.5-22.9-26.6-22.9H38.8c-16.8 0-20.2 7.9-20.2 16.7 0 15.6 20 93.1 93.1 195.5C160.4 378.1 229 416 291.4 
+                                    416c37.5 0 42.1-8.4 42.1-22.9 0-66.8-3.4-73.1 15.4-73.1 8.7 0 23.7 4.4 58.7 38.1 40 40 46.6 57.9 69 57.9h58.9c16.8 0 25.3-8.4 
+                                    20.4-25-11.2-34.9-86.9-106.7-90.3-111.5-8.7-11.2-6.2-16.2 0-26.2.1-.1 72-101.3 79.4-135.6z"></path>
+                                </svg>
+                            </a>
+                            <a href="https://m.ok.ru/profile/572263020828?__dp=y" class="social__item icon-ok" 
+                            target="_blank" rel="noreferrer" aria-label="Ссылка на группу в Одноклассниках">
+                                <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 320 512" height="26" width="26" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M275.1 334c-27.4 17.4-65.1 24.3-90 26.9l20.9 20.6 76.3 76.3c27.9 28.6-17.5 73.3-45.7 45.7-19.1-19.4-47.1-47.4-76.3-76.6L84 
+                                    503.4c-28.2 27.5-73.6-17.6-45.4-45.7 19.4-19.4 47.1-47.4 76.3-76.3l20.6-20.6c-24.6-2.6-62.9-9.1-90.6-26.9-32.6-21-46.9-33.3-34.3-59 
+                                    7.4-14.6 27.7-26.9 54.6-5.7 0 0 36.3 28.9 94.9 28.9s94.9-28.9 94.9-28.9c26.9-21.1 47.1-8.9 54.6 5.7 12.4 25.7-1.9 38-34.5 59.1zM30.3 
+                                    129.7C30.3 58 88.6 0 160 0s129.7 58 129.7 129.7c0 71.4-58.3 129.4-129.7 129.4s-129.7-58-129.7-129.4zm66 0c0 35.1 28.6 63.7 63.7 
+                                    63.7s63.7-28.6 63.7-63.7c0-35.4-28.6-64-63.7-64s-63.7 28.6-63.7 64z"></path>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer__copyright__container">
+                <div class="footer__copyright-text">
+                    © 2024. База отдыха «Победа»
+                    <span class="text-official">Официальный сайт.</span>
+                </div>
+            </div>
+            <div class="footer__payments">
+                <div class="footer__payments-list">
+                    <div class="footer__payments-item">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/d/d6/Visa_2021.svg" 
+                        alt="Логотип Visa" class="footer__payments-image" width="90" height="50" loading="lazy">
+                    </div>
+                    <div class="footer__payments-item icon-mir__item">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/b/b9/Mir-logo.SVG.svg" 
+                        alt="Логотип Мир" class="footer__payments-image" width="90" height="50" loading="lazy">
+                    </div>
+                    <div class="footer__payments-item">
+                        <img src="https://cdn.tbank.ru/static/pfa-multimedia/images/ed62434c-f486-441f-9545-767dc7a3303a.svg" 
+                        alt="Логотип Т-Банк" class="footer__payments-image" width="90" height="50" loading="lazy">
+                    </div>
+                    <div class="footer__payments-item">
+                        <img src="https://upload.wikimedia.org/wikipedia/ru/c/c7/СБП_логотип.svg" 
+                        alt="Логотип СБП" class="footer__payments-image" width="90" height="50" loading="lazy">
+                    </div>
+                    <div class="footer__payments-item">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/SberPay.png" 
+                        alt="Логотип SberPay" class="footer__payments-image" width="90" height="50" loading="lazy">
+                    </div>
+                    <div class="footer__payments-item">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/1/1b/UnionPay_logo.svg" 
+                        alt="Логотип UnionPay" class="footer__payments-image" width="90" height="50" loading="lazy">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

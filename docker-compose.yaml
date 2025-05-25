@@ -1,0 +1,75 @@
+services:
+  auth-service:
+    build:
+      context: ./auth-service
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      - MYSQL_HOST=db
+      - MYSQL_DATABASE=pobeda_auth
+      - PORT=3001
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+  booking-service:
+    build:
+      context: ./booking-service
+      dockerfile: Dockerfile
+    ports:
+      - "3002:3002"
+    environment:
+      - MYSQL_HOST=db
+      - MYSQL_DATABASE=pobeda_booking
+      - PORT=3002
+    depends_on:
+      - db
+      - auth-service
+      - booking-admin-service
+    networks:
+      - app-network
+
+  booking-admin-service:
+    build:
+      context: ./booking-admin-service
+      dockerfile: Dockerfile
+    ports:
+      - "3003:3003"
+    environment:
+      - MYSQL_HOST=db
+      - MYSQL_DATABASE=pobeda_booking_admin
+      - PORT=3003
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    networks:
+      - app-network
+
+  db:
+    image: mysql:8.0
+    environment:
+      - MYSQL_ROOT_PASSWORD=KDhSU729126&B
+    volumes:
+      - db-data:/var/lib/mysql
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    ports:
+      - "3307:3306"
+    networks:
+      - app-network
+
+volumes:
+  db-data:
+
+networks:
+  app-network:
+    driver: bridge

@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="База отдыха «Победа» — уютный отдых на природе: 
+    аренда домиков, организация мероприятий, прокат оборудования, караоке-бар и кафе.">
+
+    <link rel="stylesheet" href="./css/indexStyle.css" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <script src="https://code.jquery.com/jquery-3.6.3.js" integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM=" 
+    crossorigin="anonymous"></script>
+
+    <script src="./js/indexJS.js"></script>
+    
+
+    <link rel="icon" type="image/png" href="./forFavicon/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="./forFavicon/favicon.svg" />
+    <link rel="shortcut icon" href="./forFavicon/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="./forFavicon/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="Pobeda" />
+    <link rel="manifest" href="./forFavicon/site.webmanifest" />
+
+    <title>Главная</title>
+</head>
+<body>
+    <header class="header">
+        <div class="container__header">
+            <div class="header__body">
+                <a href="./index.html" class="header__logo">
+                    <img src="./images/логоДомик.jpg" alt="Логотип базы отдыха" title="Логотип базы отдыха">
+                </a>
+                <div class="header__burger">
+                    <span></span>
+                </div>
+                <nav class="header__menu">
+                    <ul class="header__list">
+                        <li><a href="./index.html" class="header__link slick-element">Главная</a></li>
+                        <li><a href="./pages/rent.html" class="header__link slick-element">Прокат</a></li>
+                        <li><a href="./pages/book.html" class="header__link slick-element">Бронирование</a></li>
+                        <li><a href="./pages/cafe.html" class="header__link slick-element">Кафе</a></li>
+                        <li><a href="./pages/karaoke.html" class="header__link slick-element">Караоке-бар</a></li>
+                        <li><a href="./pages/profile.html" class="header__link slick-element">Личный кабинет</a></li>
+                    </ul>
+                    <div class="worktime hburger-active">
+                        Время работы: 9:00 – 23:00
+                    </div>
+                    <a class="workphone hburger-active" href="tel:+71234567890">
+                        +7-123-456-78-90
+                    </a>
+                </nav>
+                <div class="grid__works">
+                    <div class="header__workphone">
+                        Время работы:
+                    </div>
+                    <div class="header__worktime">
+                        9:00 – 23:00
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <div class="content">
+        <div class="slider">
+            <div class="slides">
+                <div class="slide">
+                    <img src="./images/Живые фото/forCarousel1.jpeg" alt="">
+                    <div class="text__container">
+                        Вас приветствует база отдыха «Победа»
+                    </div>
+                </div>
+                <div class="slide">
+                    <img src="./images/Живые фото/Домик3-1.jpeg" alt="">
+                    <a class="text__container" href="#book__container">
+                        6 прекрасных летних беседок и домиков
+                    </a>
+                </div>
+                <div class="slide">
+                    <img src="./images/Живые фото/forCarousel3.jpeg" alt="">
+                    <a class="text__container" href="#book__container">
+                        Большой шатер и банкетный зал
+                    </a>
+                </div>
+                <div class="slide">
+                    <img src="./images/Живые фото/Прокат1.jpeg" alt="">
+                    <a class="text__container" href="#rent__container">
+                        Прокат развлекательного оборудования
+                    </a>
+                </div>
+                <div class="slide">
+                    <img src="./images/Живые фото/Кафе1.jpeg" alt="">
+                    <a class="text__container" href="#cafe__container">
+                        Уютное кафе
+                    </a>
+                </div>
+                <div class="slide">
+                    <img src="./images/Живые фото/Караоке-бар3.jpeg" alt="">
+                    <a class="text__container" href="#karaokeBar__container">
+                        Современный караоке-бар
+                    </a>
+                </div>
+            </div>
+            <div class="controls">
+                <button class="control" id="prevBtn">&#10096;</button>
+                <button class="control" id="nextBtn">&#10097;</button>
+            </div>
+        </div>
+        <script src="./js/sliderJS.js"></script>
+    </div>
+    <main class="main__content">
+        <span class="section__name">Новостной блок</span>
+        <div class="container__main">
+            <div class="news__container" id="news__container">
+                <div class="news__item">
+                    <div class="news__item__title">Открыты новые развлекательные зоны</div>
+                    <div class="news__item__content">
+                        С открытием летнего сезона на территории базы отдыха появились батуты, 
+                        волейбольная сетка. Информация по поводу цены прыжков на батуте и аренды волейбольного мяча 
+                        появится позже в разделе «Прокат».
+                    </div>
+                    <div class="news__item__date">12.06.2024</div>
+                </div>
+                <div class="news__item">
+                    <div class="news__item__title">
+                        Прокат снегоходов недоступен
+                    </div>
+                    <div class="news__item__content">
+                        К сожалению, прокат снегоходов 
+                        пока недоступен по техническим причинам.
+                    </div>
+                    <div class="news__item__date">15.02.2024</div>
+                </div>
+                <div class="news__item">
+                    <div class="news__item__title">Открыт зимний специальный сезон!</div>
+                    <div class="news__item__content">
+                        На базе отдыха «Победа» запускается серия
+                         мероприятий, посвященная новогодним забавам!
+                    </div>
+                    <div class="news__item__date">13.01.2024</div>
+                </div>
+                <div class="news__item">
+                    <div class="news__item__title">База отдыха переходит в осенний режим</div>
+                    <div class="news__item__content">
+                        С понедельника мы переходим в осенний режим. 
+                        Вся необходимая информация будет размещена позже.
+                    </div>
+                    <div class="news__item__date">22.09.2023</div>
+                </div>
+            </div>
+        </div>
+
+        <span class="section__name">Бронирование</span>
+        <div class="container__main">
+            <div class="book__container">
+                <div class="book__container__promo-card promo-card">
+                    <div class="book__container__promo-card__content">
+                        <div class="book__promo-card__title">Для бронирования на нашей базе отдыха доступны:</div>
+                        <ul class="book__places__list">
+                            <li class="book__place__li">6 домиков</li>
+                            <li class="book__place__li">6 летних беседок</li>
+                            <li class="book__place__li">банкетный зал</li>
+                            <li class="book__place__li">шатер под открытым небом</li>
+                        </ul>
+                        <div class="book_promo-card__inner__content">
+                            <button class="move__to__book__btn">
+                                <a href="./pages/book.html" class="to__book">Перейти к бронированию</a>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="book__container__promo-card__img">
+                        <img src="./images/Живые фото/Домик1-1.jpeg" alt="" class="book__promo__img">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <span class="section__name">Прокат оборудования</span>
+        <div class="container__main">
+            <div class="rent__container" id="rent__container">
+                <div class="rent__container__body">
+                    <div class="rent__body__content">
+                        <div class="rent__body__content__inner">
+                            <div class="rent__title">На нашей базе отдыха вы можете взять напрокат:</div>
+                            <ul class="rent__items">
+                                <li class="rent__item">коньки</li>
+                                <li class="rent__item">лыжи</li>
+                                <li class="rent__item">плюшки</li>
+                                <li class="rent__item">снегоход</li>
+                            </ul>
+                            <div class="rent__info">Обратите внимание, что при прокате инвентаря вы несете 
+                                ответственность за его состояние!</div>
+                        </div>
+                        <div class="rent__btn__container">
+                            <button class="move__to__rent__btn">
+                                <a href="./pages/rent.html" class="to__rent">Перейти к ассортименту</a>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="rent__images">
+                        <img src="./images/rentSkates.jpg" alt="" class="rent__img">
+                        <img src="./images/rentSki.jpg" alt="" class="rent__img">
+                        <img src="./images/rentTube1place.jpg" alt="" class="rent__img">
+                        <img src="./images/rentSnowWalk2.jpg" alt="" class="rent__img">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <span class="section__name">Кафе</span>
+        <div class="container__main">
+            <div class="cafe__container" id="cafe__container">
+                <div class="cafe__body__content">
+                    <div class="cafe__content__inner">
+                        <div class="cafe__inner__title">Кафе нашей базы отдыха предлагает посетителям следующие позиции:</div>
+                        <ul class="cafe__items">
+                            <li class="cafe__item">горячие напитки</li>
+                            <li class="cafe__item">прохладительные напитки</li>
+                            <li class="cafe__item">выпечка</li>
+                            <li class="cafe__item">вторые блюда</li>
+                            <li class="cafe__item">уютная атмосфера</li>
+                        </ul>
+                        <div class="btn__cafe__container">
+                            <button class="move__to__cafe__btn">
+                                <a href="./pages/cafe.html" class="to__cafe">Подробнее о кафе</a>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="cafe__image__container">
+                        <img src="./images/Живые фото/Кафе2.jpeg" alt="" class="cafe__img">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <span class="section__name">Караоке-бар</span>
+        <div class="container__main">
+            <div class="karaokeBar__container" id="karaokeBar__container">
+                <div class="karaoke__body__content">
+                    <div class="karaoke__content__inner">
+                        <div class="karaoke__inner__title">В нашем караоке-баре с вас 
+                            хорошее настроение и желание исполнить свои любимые хиты, а с нас:</div>
+                        <ul class="karaoke__items">
+                            <li class="karaoke__item">качественное оборудование</li>
+                            <li class="karaoke__item">гигантский ассортимент песен</li>
+                            <li class="karaoke__item">обширное меню</li>
+                            <li class="karaoke__item">барная карта</li>
+                            <li class="karaoke__item">звёздная атмосфера</li>
+                        </ul>
+                        <div class="karaoke__inner__info"></div>
+                        <div class="karaoke__btn__container">
+                            <button class="move__to__karaoke__btn">
+                                <a href="" class="to__karaoke">Подробнее о караоке-баре</a>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="karaoke__image__container">
+                        <img src="./images/Живые фото/Караоке-бар2.jpeg" alt="" class="karoke__img">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <span class="section__name">Другие развлечения</span>
+        <div class="container__main">
+            <div class="entertainment__container" id="entertainment__container">
+                <div class="entertainment__body__content">
+                    <div class="entertainment__content__inner">
+                        <div class="entertainment__inner__title">Также на базе отдыха летом появляются следующие виды развлечений:</div>
+                        <form action="" class="choice__entertainment__places" autocomplete="off">
+                            <div class="grid__row__entertainment">
+                                <input type="radio" id="trampolines" name="entertainment__place" value="Батуты" onclick="showImage('image1')" checked>
+                                <label for="trampolines" class="label__entertainment1">Батуты</label>
+                            </div>
+                            <div class="grid__row__entertainment">
+                                <input type="radio" id="volleyball_square" name="entertainment__place" value="Волейбольное поле" onclick="showImage('image2')">
+                                <label for="volleyball_square" class="label__entertainment2">Волейбольное поле</label>
+                            </div>
+                            <div class="grid__row__entertainment">
+                                <input type="radio" id="playground" name="entertainment__place" value="Детская площадка" onclick="showImage('image3')">
+                                <label for="playground" class="label__entertainment3">Детская площадка</label>
+                            </div>
+                            <div class="grid__row__entertainment">
+                                <input type="radio" id="paintball" name="entertainment__place" value="Пейнтбол" onclick="showImage('image4')">
+                                <label for="paintball" class="label__entertainment4">Пейнтбол</label>
+                            </div>
+                            <div class="grid__row__entertainment">
+                                <input type="radio" id="strikeball" name="entertainment__place" value="Страйкбол" onclick="showImage('image5')">
+                                <label for="strikeball" class="label__entertainment5">Страйкбол</label>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="entertainment__images">
+                        <img id="img1" src="./images/Живые фото/forCarousel6.jpeg" alt="" class="entertainment__photos photo1">
+                        <img id="img2" src="./images/Живые фото/Шатер3.jpeg" alt="" class="entertainment__photos photo2">
+                        <img id="img3" src="./images/Живые фото/forCarousel1.jpeg" alt="" class="entertainment__photos photo3">
+                        <img id="img4" src="./images/Пейнтбол.webp" alt="" class="entertainment__photos photo4">
+                        <img id="img5" src="./images/Страйкбол.webp" alt="" class="entertainment__photos photo5">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer class="footer">
+        <div class="container__main footer__container">
+            <div class="footer__wrapper">
+                <div class="footer__contacts">
+                    <div class="footer__contacts-item footer__contacts-item--address">
+                        <div class="footer__contacts-address-container">
+                            <div class="footer__contacts-address">
+                                <span class="visually-hidden">Адрес:</span>
+                                <span class='material-icons gps_fixed'>gps_fixed</span>
+                                652470, 
+                                <span class="text-address">Кемеровская область - Кузбасс,</span>
+                                <span class="text-address">г. Анжеро-Судженск,</span>
+                                <span class="text-address">начало ул. Хвойной,</span>
+                                <span class="text-address"></span>
+                            </div>
+                            <div class="footer__contacts-coords">
+                                <span class="visually-hidden">Координаты:</span>
+                                <a href="https://yandex.ru/maps/-/CHEiVRjq" class="footer__contacts-link" rel="noopener nofollow" target="_blank">56.074652, 85.971829</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="footer__contacts-item footer__contacts-item--phone">
+                        <div class="footer__contacts-phone">
+                            <span class='material-icons smartphone-icon'>smartphone</span>
+                            <a href="tel:+71234567890" class="footer__contacts-link" target="_blank">+7 123 456 78 90</a>
+                        </div>
+                    </div>
+                    <div class="footer__contacts-item footer__contacts-item--email">
+                        <span class='material-icons email-icon'>email</span>
+                        <a href="mailto:info@pobedabase.ru" class="footer__contacts-link" target="_blank">info@pobedabase.ru</a>
+                        <div class="footer__socials">
+                            <a href="https://vk.com/b.pobeda" class="social__item icon-vk" 
+                            target="_blank" rel="noreferrer" aria-label="Ссылка на группу во Вконтакте">
+                                <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 576 512" height="30" width="30" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M545 117.7c3.7-12.5 0-21.7-17.8-21.7h-58.9c-15 0-21.9 7.9-25.6 16.7 0 0-30 73.1-72.4 120.5-13.7 13.7-20 18.1-27.5 18.1-3.7 
+                                    0-9.4-4.4-9.4-16.9V117.7c0-15-4.2-21.7-16.6-21.7h-92.6c-9.4 0-15 7-15 13.5 0 14.2 21.2 17.5 23.4 57.5v86.8c0 19-3.4 22.5-10.9 22.5-20 
+                                    0-68.6-73.4-97.4-157.4-5.8-16.3-11.5-22.9-26.6-22.9H38.8c-16.8 0-20.2 7.9-20.2 16.7 0 15.6 20 93.1 93.1 195.5C160.4 378.1 229 416 291.4 
+                                    416c37.5 0 42.1-8.4 42.1-22.9 0-66.8-3.4-73.1 15.4-73.1 8.7 0 23.7 4.4 58.7 38.1 40 40 46.6 57.9 69 57.9h58.9c16.8 0 25.3-8.4 
+                                    20.4-25-11.2-34.9-86.9-106.7-90.3-111.5-8.7-11.2-6.2-16.2 0-26.2.1-.1 72-101.3 79.4-135.6z"></path>
+                                </svg>
+                            </a>
+                            <a href="https://m.ok.ru/profile/572263020828?__dp=y" class="social__item icon-ok" 
+                            target="_blank" rel="noreferrer" aria-label="Ссылка на группу в Одноклассниках">
+                                <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 320 512" height="26" width="26" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M275.1 334c-27.4 17.4-65.1 24.3-90 26.9l20.9 20.6 76.3 76.3c27.9 28.6-17.5 73.3-45.7 45.7-19.1-19.4-47.1-47.4-76.3-76.6L84 
+                                    503.4c-28.2 27.5-73.6-17.6-45.4-45.7 19.4-19.4 47.1-47.4 76.3-76.3l20.6-20.6c-24.6-2.6-62.9-9.1-90.6-26.9-32.6-21-46.9-33.3-34.3-59 
+                                    7.4-14.6 27.7-26.9 54.6-5.7 0 0 36.3 28.9 94.9 28.9s94.9-28.9 94.9-28.9c26.9-21.1 47.1-8.9 54.6 5.7 12.4 25.7-1.9 38-34.5 59.1zM30.3 
+                                    129.7C30.3 58 88.6 0 160 0s129.7 58 129.7 129.7c0 71.4-58.3 129.4-129.7 129.4s-129.7-58-129.7-129.4zm66 0c0 35.1 28.6 63.7 63.7 
+                                    63.7s63.7-28.6 63.7-63.7c0-35.4-28.6-64-63.7-64s-63.7 28.6-63.7 64z"></path>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer__copyright__container">
+                <div class="footer__copyright-text">
+                    © 2024. База отдыха «Победа»
+                    <span class="text-official">Официальный сайт.</span>
+                </div>
+            </div>
+            <div class="footer__payments">
+                <div class="footer__payments-list">
+                    <div class="footer__payments-item">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/d/d6/Visa_2021.svg" 
+                        alt="Логотип Visa" class="footer__payments-image" width="90" height="50" loading="lazy">
+                    </div>
+                    <div class="footer__payments-item icon-mir__item">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/b/b9/Mir-logo.SVG.svg" 
+                        alt="Логотип Мир" class="footer__payments-image" width="90" height="50" loading="lazy">
+                    </div>
+                    <div class="footer__payments-item">
+                        <img src="https://cdn.tbank.ru/static/pfa-multimedia/images/ed62434c-f486-441f-9545-767dc7a3303a.svg" 
+                        alt="Логотип Т-Банк" class="footer__payments-image" width="90" height="50" loading="lazy">
+                    </div>
+                    <div class="footer__payments-item">
+                        <img src="https://upload.wikimedia.org/wikipedia/ru/c/c7/СБП_логотип.svg" 
+                        alt="Логотип СБП" class="footer__payments-image" width="90" height="50" loading="lazy">
+                    </div>
+                    <div class="footer__payments-item">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/SberPay.png" 
+                        alt="Логотип SberPay" class="footer__payments-image" width="90" height="50" loading="lazy">
+                    </div>
+                    <div class="footer__payments-item">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/1/1b/UnionPay_logo.svg" 
+                        alt="Логотип UnionPay" class="footer__payments-image" width="90" height="50" loading="lazy">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
