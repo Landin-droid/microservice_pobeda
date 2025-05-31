@@ -1,12 +1,12 @@
 document.addEventListener("DOMContentLoaded", () => {
-    fetchHouses();
-    fetchGazebos();
+  fetchHouses();
+  fetchGazebos();
 });
 
 const API_URL = {
-    auth: process.env.AUTH_SERVICE_URL || 'https://auth-service-g23m.onrender.com',
-    booking: process.env.BOOKING_SERVICE_URL || 'https://booking-service-g1ea.onrender.com',
-    admin: process.env.ADMIN_SERVICE_URL || 'https://booking-admin-service.onrender.com'
+  auth: 'https://auth-service-g23m.onrender.com',
+  booking: 'https://booking-service-g1ea.onrender.com',
+  admin: 'https://booking-admin-service.onrender.com'
 };
 
 async function fetchHouses() {
