@@ -12,7 +12,7 @@ app.use((req, res, next) => {
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
   next();
 });
-app.use(cors({ origin: '*' }));
+app.use(cors({ origin: process.env.FRONTEND_URL || '*' }));
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -22,9 +22,9 @@ const pool = new Pool({
 async function checkConnection() {
   try {
     await pool.connect();
-    console.log('Connected to PostgeSQL (Admin Service)');
+    console.log('Connected to PostgreSQL (Admin Service)');
   } catch (error) {
-    console.error('PostgeSQL connection error:', error);
+    console.error('PostgreSQL connection error:', error);
     process.exit(1);
   }
 }
@@ -48,10 +48,11 @@ const authenticateAdmin = async (req, res, next) => {
 // Получение всех домиков
 app.get('/houses', async (req, res) => {
   try {
-    const [houses] = await pool.query('SELECT * FROM booking_admin.houses');
-    console.log(houses);
-    res.json(houses);
+    const { rows } = await pool.query('SELECT * FROM booking_admin.houses');
+    console.log('Houses:', rows);
+    res.json(rows);
   } catch (error) {
+    console.error('Error fetching houses:', error.message);
     res.status(500).json({ error: error.message });
   }
 });
@@ -59,10 +60,11 @@ app.get('/houses', async (req, res) => {
 // Получение дома по ID
 app.get('/houses/:id', async (req, res) => {
   try {
-    const [houses] = await pool.query('SELECT * FROM booking_admin.houses WHERE id = ?', [req.params.id]);
-    if (houses.length === 0) return res.status(404).json({ error: 'Домик не найден' });
-    res.json(houses[0]);
+    const { rows } = await pool.query('SELECT * FROM booking_admin.houses WHERE id = $1', [req.params.id]);
+    if (rows.length === 0) return res.status(404).json({ error: 'Домик не найден' });
+    res.json(rows[0]);
   } catch (error) {
+    console.error('Error fetching house:', error.message);
     res.status(500).json({ error: error.message });
   }
 });
@@ -72,12 +74,13 @@ app.post('/houses', authenticateAdmin, async (req, res) => {
   try {
     const { name, price, people_amount, water_supply, electricity, bathroom, fridge, teapot, microwave_oven, images } = req.body;
     if (!name || !price || !people_amount) return res.status(400).json({ error: 'Имя, цена и количество человек обязательны' });
-    const [result] = await pool.query(
-      'INSERT INTO booking_admin.houses (name, price, people_amount, water_supply, electricity, bathroom, fridge, teapot, microwave_oven, images) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      [name, price, people_amount, !!water_supply, !!electricity, !!bathroom, !!fridge, !!teapot, !!microwave_oven, images ? JSON.stringify(images) : null]
+    const { rows } = await pool.query(
+      'INSERT INTO booking_admin.houses (name, price, people_amount, water_supply, electricity, bathroom, fridge, teapot, microwave_oven, images) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id',
+      [name, price, people_amount, !!water_supply, !!electricity, !!bathroom, !!fridge, !!teapot, !!microwave_oven, images ? images : null]
     );
-    res.status(201).json({ message: 'Дом создан', id: result.insertId });
+    res.status(201).json({ message: 'Дом создан', id: rows[0].id });
   } catch (error) {
+    console.error('Error creating house:', error.message);
     res.status(500).json({ error: error.message });
   }
 });
@@ -87,13 +90,14 @@ app.put('/houses/:id', authenticateAdmin, async (req, res) => {
   try {
     const { name, price, people_amount, water_supply, electricity, bathroom, fridge, teapot, microwave_oven, images } = req.body;
     if (!name || !price || !people_amount) return res.status(400).json({ error: 'Имя, цена и количество человек обязательны' });
-    const [result] = await pool.query(
-      'UPDATE booking_admin.houses SET name = ?, price = ?, people_amount = ?, water_supply = ?, electricity = ?, bathroom = ?, fridge = ?, teapot = ?, microwave_oven = ?, images = ? WHERE id = ?',
-      [name, price, people_amount, !!water_supply, !!electricity, !!bathroom, !!fridge, !!teapot, !!microwave_oven, images ? JSON.stringify(images) : null, req.params.id]
+    const { rowCount } = await pool.query(
+      'UPDATE booking_admin.houses SET name = $1, price = $2, people_amount = $3, water_supply = $4, electricity = $5, bathroom = $6, fridge = $7, teapot = $8, microwave_oven = $9, images = $10 WHERE id = $11',
+      [name, price, people_amount, !!water_supply, !!electricity, !!bathroom, !!fridge, !!teapot, !!microwave_oven, images ? images : null, req.params.id]
     );
-    if (result.affectedRows === 0) return res.status(404).json({ error: 'Дом не найден' });
+    if (rowCount === 0) return res.status(404).json({ error: 'Дом не найден' });
     res.json({ message: 'Дом обновлён' });
   } catch (error) {
+    console.error('Error updating house:', error.message);
     res.status(500).json({ error: error.message });
   }
 });
@@ -101,10 +105,11 @@ app.put('/houses/:id', authenticateAdmin, async (req, res) => {
 // Удаление дома
 app.delete('/houses/:id', authenticateAdmin, async (req, res) => {
   try {
-    const [result] = await pool.query('DELETE FROM booking_admin.houses WHERE id = ?', [req.params.id]);
-    if (result.affectedRows === 0) return res.status(404).json({ error: 'Дом не найден' });
+    const { rowCount } = await pool.query('DELETE FROM booking_admin.houses WHERE id = $1', [req.params.id]);
+    if (rowCount === 0) return res.status(404).json({ error: 'Дом не найден' });
     res.json({ message: 'Дом удалён' });
   } catch (error) {
+    console.error('Error deleting house:', error.message);
     res.status(500).json({ error: error.message });
   }
 });
@@ -112,10 +117,11 @@ app.delete('/houses/:id', authenticateAdmin, async (req, res) => {
 // Получение всех беседок
 app.get('/gazebos', async (req, res) => {
   try {
-    const {gazebos} = await pool.query('SELECT * FROM booking_admin.gazebos');
-    console.log(gazebos);
-    res.json(gazebos);
+    const { rows } = await pool.query('SELECT * FROM booking_admin.gazebos');
+    console.log('Gazebos:', rows); // Исправлено: rows вместо gazebos
+    res.json(rows);
   } catch (error) {
+    console.error('Error fetching gazebos:', error.message);
     res.status(500).json({ error: error.message });
   }
 });
@@ -123,10 +129,11 @@ app.get('/gazebos', async (req, res) => {
 // Получение беседки по ID
 app.get('/gazebos/:id', async (req, res) => {
   try {
-    const {gazebos} = await pool.query('SELECT * FROM booking_admin.gazebos WHERE id = ?', [req.params.id]);
-    if (gazebos.length === 0) return res.status(404).json({ error: 'Беседка не найдена' });
-    res.json(gazebos[0]);
+    const { rows } = await pool.query('SELECT * FROM booking_admin.gazebos WHERE id = $1', [req.params.id]);
+    if (rows.length === 0) return res.status(404).json({ error: 'Беседка не найдена' });
+    res.json(rows[0]);
   } catch (error) {
+    console.error('Error fetching gazebo:', error.message);
     res.status(500).json({ error: error.message });
   }
 });
@@ -136,12 +143,13 @@ app.post('/gazebos', authenticateAdmin, async (req, res) => {
   try {
     const { name, price, people_amount, electricity, grill, images } = req.body;
     if (!name || !price || !people_amount) return res.status(400).json({ error: 'Имя, цена и количество человек обязательны' });
-    const {result} = await pool.query(
-      'INSERT INTO booking_admin.gazebos (name, price, people_amount, electricity, grill, images) VALUES (?, ?, ?, ?, ?, ?)',
-      [name, price, people_amount, !!electricity, !!grill, images ? JSON.stringify(images) : null]
+    const { rows } = await pool.query(
+      'INSERT INTO booking_admin.gazebos (name, price, people_amount, electricity, grill, images) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id',
+      [name, price, people_amount, !!electricity, !!grill, images ? images : null]
     );
-    res.status(201).json({ message: 'Беседка создана', id: result.insertId });
+    res.status(201).json({ message: 'Беседка создана', id: rows[0].id });
   } catch (error) {
+    console.error('Error creating gazebo:', error.message);
     res.status(500).json({ error: error.message });
   }
 });
@@ -151,13 +159,14 @@ app.put('/gazebos/:id', authenticateAdmin, async (req, res) => {
   try {
     const { name, price, people_amount, electricity, grill, images } = req.body;
     if (!name || !price || !people_amount) return res.status(400).json({ error: 'Имя, цена и количество человек обязательны' });
-    const {result} = await pool.query(
-      'UPDATE booking_admin.gazebos SET name = ?, price = ?, people_amount = ?, electricity = ?, grill = ?, images = ? WHERE id = ?',
-      [name, price, people_amount, !!electricity, !!grill, images ? JSON.stringify(images) : null, req.params.id]
+    const { rowCount } = await pool.query(
+      'UPDATE booking_admin.gazebos SET name = $1, price = $2, people_amount = $3, electricity = $4, grill = $5, images = $6 WHERE id = $7',
+      [name, price, people_amount, !!electricity, !!grill, images ? images : null, req.params.id]
     );
-    if (result.affectedRows === 0) return res.status(404).json({ error: 'Беседка не найдена' });
+    if (rowCount === 0) return res.status(404).json({ error: 'Беседка не найдена' });
     res.json({ message: 'Беседка обновлена' });
   } catch (error) {
+    console.error('Error updating gazebo:', error.message);
     res.status(500).json({ error: error.message });
   }
 });
@@ -165,10 +174,11 @@ app.put('/gazebos/:id', authenticateAdmin, async (req, res) => {
 // Удаление беседки
 app.delete('/gazebos/:id', authenticateAdmin, async (req, res) => {
   try {
-    const {result} = await pool.query('DELETE FROM booking_admin.gazebos WHERE id = ?', [req.params.id]);
-    if (result.affectedRows === 0) return res.status(404).json({ error: 'Беседка не найдена' });
+    const { rowCount } = await pool.query('DELETE FROM booking_admin.gazebos WHERE id = $1', [req.params.id]);
+    if (rowCount === 0) return res.status(404).json({ error: 'Беседка не найдена' });
     res.json({ message: 'Беседка удалена' });
   } catch (error) {
+    console.error('Error deleting gazebo:', error.message);
     res.status(500).json({ error: error.message });
   }
 });

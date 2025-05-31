@@ -13,7 +13,7 @@ app.use((req, res, next) => {
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
   next();
 });
-app.use(cors({ origin: '*' }));
+app.use(cors({ origin: process.env.FRONTEND_URL || '*' }));
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -51,17 +51,21 @@ app.post('/register', async (req, res) => {
     if (!name || !surname || !email || !phone || !password) {
       return res.status(400).json({ error: 'Все поля обязательны' });
     }
-    const {existingUsers} = await pool.query('SELECT id FROM auth.users WHERE email = ?', [email]);
+    const { rows: existingUsers } = await pool.query(
+      'SELECT id FROM auth.users WHERE email = $1',
+      [email]
+    );
     if (existingUsers.length > 0) {
       return res.status(400).json({ error: 'Email уже зарегистрирован' });
     }
     const hashedPassword = await bcrypt.hash(password, 10);
-    const {result} = await pool.query(
-      'INSERT INTO auth.users (name, surname, email, phone, password, role) VALUES (?, ?, ?, ?, ?, ?)',
+    await pool.query(
+      'INSERT INTO auth.users (name, surname, email, phone, password, role) VALUES ($1, $2, $3, $4, $5, $6)',
       [name, surname, email, phone, hashedPassword, 'user']
     );
     res.status(201).json({ message: 'Пользователь зарегистрирован' });
   } catch (error) {
+    console.error('Error registering user:', error.message);
     res.status(500).json({ error: error.message });
   }
 });
@@ -73,11 +77,14 @@ app.post('/login', async (req, res) => {
     if (!email || !password) {
       return res.status(400).json({ error: 'Email и пароль обязательны' });
     }
-    const {users} = await pool.query('SELECT * FROM auth.users WHERE email = ?', [email]);
-    if (users.length === 0) {
+    const { rows } = await pool.query(
+      'SELECT * FROM auth.users WHERE email = $1',
+      [email]
+    );
+    if (rows.length === 0) {
       return res.status(401).json({ error: 'Неверный email или пароль' });
     }
-    const user = users[0];
+    const user = rows[0]; // Исправлено: rows[0] вместо users[0]
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return res.status(401).json({ error: 'Неверный email или пароль' });
@@ -89,6 +96,7 @@ app.post('/login', async (req, res) => {
     );
     res.json({ token });
   } catch (error) {
+    console.error('Error logging in:', error.message);
     res.status(500).json({ error: error.message });
   }
 });
@@ -96,10 +104,16 @@ app.post('/login', async (req, res) => {
 // Получение профиля
 app.get('/profile', authenticate, async (req, res) => {
   try {
-    const {users} = await pool.query('SELECT id, name, surname, email, phone, role FROM auth.users WHERE id = ?', [req.user.id]);
-    if (users.length === 0) return res.status(404).json({ error: 'Пользователь не найден' });
-    res.json(users[0]);
+    const { rows } = await pool.query(
+      'SELECT id, name, surname, email, phone, role FROM auth.users WHERE id = $1',
+      [req.user.id]
+    );
+    if (rows.length === 0) {
+      return res.status(404).json({ error: 'Пользователь не найден' });
+    }
+    res.json(rows[0]); // Исправлено: rows[0] вместо users[0]
   } catch (error) {
+    console.error('Error fetching profile:', error.message);
     res.status(500).json({ error: error.message });
   }
 });
@@ -111,19 +125,23 @@ app.put('/profile', authenticate, async (req, res) => {
     if (!name || !surname || !email || !phone) {
       return res.status(400).json({ error: 'Все поля обязательны' });
     }
-    const {existingUsers} = await pool.query('SELECT id FROM auth.users WHERE email = ? AND id != ?', [email, req.user.id]);
+    const { rows: existingUsers } = await pool.query(
+      'SELECT id FROM auth.users WHERE email = $1 AND id != $2',
+      [email, req.user.id]
+    );
     if (existingUsers.length > 0) {
       return res.status(400).json({ error: 'Email уже используется' });
     }
-    const {result} = await pool.query(
-      'UPDATE auth.users SET name = ?, surname = ?, email = ?, phone = ? WHERE id = ?',
+    const { rowCount } = await pool.query(
+      'UPDATE auth.users SET name = $1, surname = $2, email = $3, phone = $4 WHERE id = $5',
       [name, surname, email, phone, req.user.id]
     );
-    if (result.affectedRows === 0) {
+    if (rowCount === 0) {
       return res.status(404).json({ error: 'Пользователь не найден' });
     }
     res.json({ message: 'Профиль обновлён' });
   } catch (error) {
+    console.error('Error updating profile:', error.message);
     res.status(500).json({ error: error.message });
   }
 });

@@ -12,7 +12,7 @@ app.use((req, res, next) => {
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
   next();
 });
-app.use(cors({ origin: '*' }));
+app.use(cors({ origin: process.env.FRONTEND_URL || '*' }));
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -73,22 +73,23 @@ app.post('/bookings', authenticate, async (req, res) => {
       return res.status(400).json({ error: 'Недопустимая дата' });
     }
     // Проверка занятой даты
-    const [existingBookings] = await pool.query(
+    const { rows: existingBookings } = await pool.query(
       `SELECT id FROM booking.bookings 
-       WHERE type = ? AND ${type === 'house' ? 'house_id' : 'gazebo_id'} = ? 
-       AND booking_date = ? AND status IN ('pending', 'confirmed')`,
+       WHERE type = $1 AND ${type === 'house' ? 'house_id' : 'gazebo_id'} = $2 
+       AND booking_date = $3 AND status IN ('pending', 'confirmed')`,
       [type, item_id, booking_date]
     );
     if (existingBookings.length > 0) {
       return res.status(400).json({ error: 'Дата уже забронирована' });
     }
-    const {result} = await pool.query(
+    const { rows } = await pool.query(
       `INSERT INTO booking.bookings (user_id, type, ${type === 'house' ? 'house_id' : 'gazebo_id'}, booking_date, status) 
-       VALUES (?, ?, ?, ?, ?)`,
+       VALUES ($1, $2, $3, $4, $5) RETURNING id`,
       [req.user.id, type, item_id, booking_date, 'pending']
     );
-    res.status(201).json({ message: 'Бронирование создано', booking_id: result.insertId });
+    res.status(201).json({ message: 'Бронирование создано', booking_id: rows[0].id });
   } catch (error) {
+    console.error('Error creating booking:', error.message);
     res.status(500).json({ error: error.message });
   }
 });
@@ -103,15 +104,16 @@ app.get('/bookings/dates', async (req, res) => {
     if (!['house', 'gazebo'].includes(type)) {
       return res.status(400).json({ error: 'Недопустимый тип' });
     }
-    const {bookings} = await pool.query(
+    const { rows } = await pool.query(
       `SELECT booking_date FROM booking.bookings 
-       WHERE type = ? AND ${type === 'house' ? 'house_id' : 'gazebo_id'} = ? 
+       WHERE type = $1 AND ${type === 'house' ? 'house_id' : 'gazebo_id'} = $2 
        AND status IN ('pending', 'confirmed')`,
       [type, item_id]
     );
-    const bookedDates = bookings.map(b => b.booking_date.toISOString().split('T')[0]);
+    const bookedDates = rows.map(b => new Date(b.booking_date).toISOString().split('T')[0]);
     res.json(bookedDates);
   } catch (error) {
+    console.error('Error fetching booked dates:', error.message);
     res.status(500).json({ error: error.message });
   }
 });
@@ -119,12 +121,13 @@ app.get('/bookings/dates', async (req, res) => {
 // Получение бронирований пользователя
 app.get('/bookings', authenticate, async (req, res) => {
   try {
-    const {bookings} = await pool.query(
-      'SELECT * FROM booking.bookings WHERE user_id = ?',
+    const { rows } = await pool.query(
+      'SELECT * FROM booking.bookings WHERE user_id = $1',
       [req.user.id]
     );
-    res.json(bookings);
+    res.json(rows);
   } catch (error) {
+    console.error('Error fetching user bookings:', error.message);
     res.status(500).json({ error: error.message });
   }
 });
@@ -132,18 +135,18 @@ app.get('/bookings', authenticate, async (req, res) => {
 // Получение всех бронирований (админ)
 app.get('/bookings/all', authenticateAdmin, async (req, res) => {
   try {
-    const {bookings} = await pool.query(`
+    const { rows } = await pool.query(`
       SELECT b.id, b.user_id, b.type, b.house_id, b.gazebo_id, b.booking_date, b.status, b.created_at, u.email
       FROM booking.bookings b
       JOIN auth.users u ON b.user_id = u.id
     `);
-    const enrichedBookings = await Promise.all(bookings.map(async booking => {
+    const enrichedBookings = await Promise.all(rows.map(async booking => {
       const itemId = booking.type === 'house' ? booking.house_id : booking.gazebo_id;
       const endpoint = booking.type === 'house' ? 'houses' : 'gazebos';
       try {
         const response = await fetch(`${process.env.ADMIN_SERVICE_URL}/${endpoint}/${itemId}`);
-        const item = await response.json();
         if (!response.ok) throw new Error('Объект не найден');
+        const item = await response.json();
         return {
           ...booking,
           item_name: item.name,
@@ -159,6 +162,7 @@ app.get('/bookings/all', authenticateAdmin, async (req, res) => {
     }));
     res.json(enrichedBookings);
   } catch (error) {
+    console.error('Error fetching all bookings:', error.message);
     res.status(500).json({ error: error.message });
   }
 });
@@ -170,15 +174,16 @@ app.put('/bookings/:id', authenticateAdmin, async (req, res) => {
     if (!['pending', 'confirmed', 'cancelled'].includes(status)) {
       return res.status(400).json({ error: 'Недопустимый статус' });
     }
-    const {result} = await pool.query(
-      'UPDATE booking.bookings SET status = ? WHERE id = ?',
+    const { rowCount } = await pool.query(
+      'UPDATE booking.bookings SET status = $1 WHERE id = $2',
       [status, req.params.id]
     );
-    if (result.affectedRows === 0) {
+    if (rowCount === 0) {
       return res.status(404).json({ error: 'Бронирование не найдено' });
     }
     res.json({ message: 'Статус брони обновлён' });
   } catch (error) {
+    console.error('Error updating booking status:', error.message);
     res.status(500).json({ error: error.message });
   }
 });
@@ -187,15 +192,16 @@ app.put('/bookings/:id', authenticateAdmin, async (req, res) => {
 app.delete('/bookings/:id', authenticate, async (req, res) => {
   try {
     const bookingId = req.params.id;
-    const {result} = await pool.query(
-      'UPDATE booking.bookings SET status = ? WHERE id = ? AND user_id = ? AND status != ?',
+    const { rowCount } = await pool.query(
+      'UPDATE booking.bookings SET status = $1 WHERE id = $2 AND user_id = $3 AND status != $1',
       ['cancelled', bookingId, req.user.id, 'cancelled']
     );
-    if (result.affectedRows === 0) {
+    if (rowCount === 0) {
       return res.status(404).json({ error: 'Бронирование не найдено или уже отменено' });
     }
     res.json({ message: 'Бронирование отменено' });
   } catch (error) {
+    console.error('Error cancelling booking:', error.message);
     res.status(500).json({ error: error.message });
   }
 });
