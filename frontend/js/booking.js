@@ -3,9 +3,15 @@ document.addEventListener("DOMContentLoaded", () => {
     fetchGazebos();
 });
 
+const API_URL = {
+    auth: process.env.AUTH_SERVICE_URL || 'https://auth-service-g23m.onrender.com',
+    booking: process.env.BOOKING_SERVICE_URL || 'https://booking-service-g1ea.onrender.com',
+    admin: process.env.ADMIN_SERVICE_URL || 'https://booking-admin-service.onrender.com'
+};
+
 async function fetchHouses() {
   try {
-    const response = await fetch('http://localhost:3003/houses', {
+    const response = await fetch(`${API_URL.admin}/houses`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' }
     });
@@ -19,7 +25,7 @@ async function fetchHouses() {
 
 async function fetchGazebos() {
   try {
-    const response = await fetch('http://localhost:3003/gazebos', {
+    const response = await fetch(`${API_URL.admin}/gazebos`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' }
     });
@@ -186,7 +192,7 @@ async function openBookingModal(id, type, name, people_amount, price, image_url)
 
     // Загрузка занятых дат
     try {
-        const response = await fetch(`http://localhost:3002/bookings/dates?type=${type}&item_id=${id}`);
+        const response = await fetch(`${API_URL.booking}/bookings/dates?type=${type}&item_id=${id}`);
         const bookedDates = await response.json();
         if (!response.ok) throw new Error('Ошибка получения дат');
         const dateInput = document.getElementById('booking-date');
@@ -220,7 +226,7 @@ document.getElementById('confirm-booking').addEventListener('click', async () =>
     }
 
     try {
-        const response = await fetch('http://localhost:3002/bookings', {
+        const response = await fetch(`${API_URL.booking}/bookings`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

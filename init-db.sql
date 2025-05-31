@@ -1,8 +1,8 @@
 -- Создание базы данных
-CREATE DATABASE pobeda;
+CREATE DATABASE IF NOT EXISTS pobeda;
 
 -- Подключение к базе
-\c pobeda
+\c pobeda_db
 
 -- Создание схем
 CREATE SCHEMA IF NOT EXISTS auth;

@@ -370,6 +370,11 @@
 
     <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
     <script>
+      const API_URL = {
+        auth: process.env.AUTH_SERVICE_URL || 'https://auth-service-g23m.onrender.com',
+        booking: process.env.BOOKING_SERVICE_URL || 'https://booking-service-g1ea.onrender.com',
+        admin: process.env.ADMIN_SERVICE_URL || 'https://booking-admin-service.onrender.com'
+      };
       // Кэш для домиков и беседок
       let itemsCache = { houses: {}, gazebos: {} };
       // Показ/скрытие форм
@@ -444,8 +449,8 @@
     async function loadItemsCache() {
       try {
         const [housesResponse, gazebosResponse] = await Promise.all([
-          fetch('http://localhost:3003/houses'),
-          fetch('http://localhost:3003/gazebos')
+          fetch(`${API_URL.admin}/houses`),
+          fetch(`${API_URL.admin}/gazebos`)
         ]);
         const houses = await housesResponse.json();
         const gazebos = await gazebosResponse.json();
@@ -460,7 +465,7 @@
 
     // Получение профиля
     async function getUserProfile(token) {
-      const response = await fetch('http://localhost:3001/profile', {
+      const response = await fetch(`${API_URL.auth}/profile`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -481,7 +486,7 @@
       const messageEl = document.getElementById('register-message');
 
       try {
-        const response = await fetch('http://localhost:3001/register', {
+        const response = await fetch(`${API_URL.auth}/register`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ name, surname, email, phone, password })
@@ -513,7 +518,7 @@
       const messageEl = document.getElementById('login-message');
 
       try {
-        const response = await fetch('http://localhost:3001/login', {
+        const response = await fetch(`${API_URL.auth}/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password })
@@ -551,7 +556,7 @@
       const token = Cookies.get('jwt_token');
 
       try {
-        const response = await fetch('http://localhost:3001/profile', {
+        const response = await fetch(`${API_URL.auth}/profile`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -583,7 +588,7 @@
       }
 
       try {
-        const response = await fetch('http://localhost:3002/bookings', {
+        const response = await fetch(`${API_URL.booking}/bookings`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -643,7 +648,7 @@
       if (!confirm('Вы уверены, что хотите отменить бронирование?')) return;
 
       try {
-        const response = await fetch(`http://localhost:3002/bookings/${bookingId}`, {
+        const response = await fetch(`${API_URL.booking}/bookings/${bookingId}`, {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
@@ -662,7 +667,7 @@
     async function fetchAllBookings() {
       const token = Cookies.get('jwt_token');
       try {
-        const response = await fetch('http://localhost:3002/bookings/all', {
+        const response = await fetch(`${API_URL.booking}/bookings/all`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -707,7 +712,7 @@
     async function updateBookingStatus(bookingId, status) {
       const token = Cookies.get('jwt_token');
       try {
-        const response = await fetch(`http://localhost:3002/bookings/${bookingId}`, {
+        const response = await fetch(`${API_URL.booking}/bookings/${bookingId}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -729,7 +734,7 @@
       if (!confirm('Вы уверены, что хотите удалить бронирование?')) return;
       const token = Cookies.get('jwt_token');
       try {
-        const response = await fetch(`http://localhost:3002/bookings/${bookingId}`, {
+        const response = await fetch(`${API_URL.booking}/bookings/${bookingId}`, {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
@@ -748,8 +753,8 @@
     async function fetchAllItems() {
       try {
         const [housesResponse, gazebosResponse] = await Promise.all([
-          fetch('http://localhost:3003/houses'),
-          fetch('http://localhost:3003/gazebos')
+          fetch(`${API_URL.admin}/houses`),
+          fetch(`${API_URL.admin}/gazebos`)
         ]);
         const houses = await housesResponse.json();
         const gazebos = await gazebosResponse.json();
@@ -807,7 +812,7 @@
       const messageEl = document.getElementById('add-item-message');
 
       try {
-        const response = await fetch(`http://localhost:3003/${type}s`, {
+        const response = await fetch(`${API_URL.admin}/${type}s`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -881,7 +886,7 @@
           body.grill = document.getElementById('gazebo-grill').checked;
         }
         try {
-          const response = await fetch(`http://localhost:3003/${type}s/${id}`, {
+          const response = await fetch(`${API_URL.admin}/${type}s/${id}`, {
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json',
@@ -911,7 +916,7 @@
       if (!confirm('Вы уверены, что хотите удалить объект?')) return;
       const token = Cookies.get('jwt_token');
       try {
-        const response = await fetch(`http://localhost:3003/${type}s/${id}`, {
+        const response = await fetch(`${API_URL.admin}/${type}s/${id}`, {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
