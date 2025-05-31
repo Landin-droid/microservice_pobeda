@@ -1,5 +1,5 @@
 const express = require('express');
-const mysql = require('mysql2/promise');
+const { Pool } = require('pg');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
@@ -15,43 +15,18 @@ app.use((req, res, next) => {
 });
 app.use(cors({ origin: '*' }));
 
-const pool = mysql.createPool({
-  host: process.env.MYSQL_HOST,
-  user: process.env.MYSQL_USER,
-  password: process.env.MYSQL_PASSWORD,
-  database: process.env.MYSQL_DATABASE,
-  charset: 'utf8mb4',
-  waitForConnections: true,
-  connectionLimit: 10
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false }
 });
 
 async function checkConnection() {
   try {
-    await pool.getConnection();
-    console.log('Connected to MySQL (Auth Service)');
+    await pool.connect();
+    console.log('Connected to PostgreSQL (Auth Service)');
   } catch (error) {
-    console.error('MySQL connection error:', error);
+    console.error('PostgreSQL connection error:', error);
     process.exit(1);
-  }
-}
-
-async function initDatabase() {
-  try {
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS users (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        name VARCHAR(255) NOT NULL,
-        surname VARCHAR(255) NOT NULL,
-        email VARCHAR(255) NOT NULL UNIQUE,
-        phone VARCHAR(20) NOT NULL,
-        password VARCHAR(255) NOT NULL,
-        role ENUM('user', 'admin') NOT NULL DEFAULT 'user',
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      )
-    `);
-    console.log('Users table initialized');
-  } catch (error) {
-    console.error('Error initializing database:', error);
   }
 }
 
@@ -76,13 +51,13 @@ app.post('/register', async (req, res) => {
     if (!name || !surname || !email || !phone || !password) {
       return res.status(400).json({ error: 'Все поля обязательны' });
     }
-    const [existingUsers] = await pool.query('SELECT id FROM users WHERE email = ?', [email]);
+    const [existingUsers] = await pool.query('SELECT id FROM auth.users WHERE email = ?', [email]);
     if (existingUsers.length > 0) {
       return res.status(400).json({ error: 'Email уже зарегистрирован' });
     }
     const hashedPassword = await bcrypt.hash(password, 10);
     const [result] = await pool.query(
-      'INSERT INTO users (name, surname, email, phone, password, role) VALUES (?, ?, ?, ?, ?, ?)',
+      'INSERT INTO auth.users (name, surname, email, phone, password, role) VALUES (?, ?, ?, ?, ?, ?)',
       [name, surname, email, phone, hashedPassword, 'user']
     );
     res.status(201).json({ message: 'Пользователь зарегистрирован' });
@@ -98,7 +73,7 @@ app.post('/login', async (req, res) => {
     if (!email || !password) {
       return res.status(400).json({ error: 'Email и пароль обязательны' });
     }
-    const [users] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
+    const [users] = await pool.query('SELECT * FROM auth.users WHERE email = ?', [email]);
     if (users.length === 0) {
       return res.status(401).json({ error: 'Неверный email или пароль' });
     }
@@ -121,7 +96,7 @@ app.post('/login', async (req, res) => {
 // Получение профиля
 app.get('/profile', authenticate, async (req, res) => {
   try {
-    const [users] = await pool.query('SELECT id, name, surname, email, phone, role FROM users WHERE id = ?', [req.user.id]);
+    const [users] = await pool.query('SELECT id, name, surname, email, phone, role FROM auth.users WHERE id = ?', [req.user.id]);
     if (users.length === 0) return res.status(404).json({ error: 'Пользователь не найден' });
     res.json(users[0]);
   } catch (error) {
@@ -136,12 +111,12 @@ app.put('/profile', authenticate, async (req, res) => {
     if (!name || !surname || !email || !phone) {
       return res.status(400).json({ error: 'Все поля обязательны' });
     }
-    const [existingUsers] = await pool.query('SELECT id FROM users WHERE email = ? AND id != ?', [email, req.user.id]);
+    const [existingUsers] = await pool.query('SELECT id FROM auth.users WHERE email = ? AND id != ?', [email, req.user.id]);
     if (existingUsers.length > 0) {
       return res.status(400).json({ error: 'Email уже используется' });
     }
     const [result] = await pool.query(
-      'UPDATE users SET name = ?, surname = ?, email = ?, phone = ? WHERE id = ?',
+      'UPDATE auth.users SET name = ?, surname = ?, email = ?, phone = ? WHERE id = ?',
       [name, surname, email, phone, req.user.id]
     );
     if (result.affectedRows === 0) {
@@ -153,7 +128,9 @@ app.put('/profile', authenticate, async (req, res) => {
   }
 });
 
-checkConnection().then(() => initDatabase()).then(() => {
-  const PORT = 3001;
-  app.listen(PORT, () => console.log(`Auth service running on port ${PORT}`));
+checkConnection().then(() => {
+  const PORT = process.env.PORT || 3001;
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server running on port ${PORT}`);
+  });
 }).catch(err => console.error('Startup error:', err));

@@ -1,75 +1,49 @@
+version: '3.8'
 services:
   auth-service:
-    build:
-      context: ./auth-service
-      dockerfile: Dockerfile
+    build: ./auth-service
     ports:
       - "3001:3001"
     environment:
-      - MYSQL_HOST=db
-      - MYSQL_DATABASE=pobeda_auth
+      - DATABASE_URL=${DATABASE_URL}
+      - JWT_SECRET=${JWT_SECRET}
+      - FRONTEND_URL=${FRONTEND_URL}
       - PORT=3001
     depends_on:
       - db
-    networks:
-      - app-network
-
   booking-service:
-    build:
-      context: ./booking-service
-      dockerfile: Dockerfile
+    build: ./booking-service
     ports:
       - "3002:3002"
     environment:
-      - MYSQL_HOST=db
-      - MYSQL_DATABASE=pobeda_booking
+      - DATABASE_URL=${DATABASE_URL}
+      - JWT_SECRET=${JWT_SECRET}
+      - ADMIN_SERVICE_URL=${ADMIN_SERVICE_URL}
+      - AUTH_SERVICE_URL=${AUTH_SERVICE_URL}
+      - FRONTEND_URL=${FRONTEND_URL}
       - PORT=3002
     depends_on:
       - db
       - auth-service
       - booking-admin-service
-    networks:
-      - app-network
-
   booking-admin-service:
-    build:
-      context: ./booking-admin-service
-      dockerfile: Dockerfile
+    build: ./booking-admin-service
     ports:
       - "3003:3003"
     environment:
-      - MYSQL_HOST=db
-      - MYSQL_DATABASE=pobeda_booking_admin
+      - DATABASE_URL=${DATABASE_URL}
+      - JWT_SECRET=${JWT_SECRET}
+      - FRONTEND_URL=${FRONTEND_URL}
       - PORT=3003
     depends_on:
       - db
-    networks:
-      - app-network
-
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    ports:
-      - "8080:80"
-    networks:
-      - app-network
-
   db:
-    image: mysql:8.0
+    image: postgres:16
     environment:
-      - MYSQL_ROOT_PASSWORD=KDhSU729126&B
-    volumes:
-      - db-data:/var/lib/mysql
-      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+      - POSTGRES_USER=pobeda_db_user
+      - POSTGRES_PASSWORD=2ofNgztgwM6JIdzEJsopREWNfpvAkyXy
+      - POSTGRES_DB=pobeda_db
     ports:
-      - "3307:3306"
-    networks:
-      - app-network
-
-volumes:
-  db-data:
-
-networks:
-  app-network:
-    driver: bridge
+      - "5432:5432"
+    volumes:
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init.sql

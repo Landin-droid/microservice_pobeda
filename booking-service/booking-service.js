@@ -1,5 +1,5 @@
 const express = require('express');
-const mysql = require('mysql2/promise');
+const { Pool } = require('pg');
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
 const cors = require('cors');
@@ -14,51 +14,21 @@ app.use((req, res, next) => {
 });
 app.use(cors({ origin: '*' }));
 
-const pool = mysql.createPool({
-  host: process.env.MYSQL_HOST,
-  user: process.env.MYSQL_USER,
-  password: process.env.MYSQL_PASSWORD,
-  database: process.env.MYSQL_DATABASE,
-  charset: 'utf8mb4',
-  waitForConnections: true,
-  connectionLimit: 10
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false }
 });
 
 // Проверка соединения
 async function checkConnection() {
   try {
-    await pool.getConnection();
-    console.log('Connected to MySQL (Booking Service)');
+    await pool.connect();
+    console.log('Connected to PostgreSQL (Booking Service)');
   } catch (error) {
-    console.error('MySQL connection error:', error);
+    console.error('PostgreSQL connection error:', error);
     process.exit(1);
   }
 }
-
-// Инициализация таблицы bookings
-const initDatabase = async () => {
-  try {
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS bookings (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        user_id INT NOT NULL,
-        type ENUM('house', 'gazebo') NOT NULL,
-        house_id INT NULL,
-        gazebo_id INT NULL,
-        booking_date DATE NOT NULL,
-        status ENUM('pending', 'confirmed', 'cancelled') DEFAULT 'pending',
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (user_id) REFERENCES pobeda_auth.users(id),
-        FOREIGN KEY (house_id) REFERENCES pobeda_booking_admin.houses(id),
-        FOREIGN KEY (gazebo_id) REFERENCES pobeda_booking_admin.gazebos(id),
-        CHECK ((house_id IS NOT NULL AND gazebo_id IS NULL) OR (house_id IS NULL AND gazebo_id IS NOT NULL))
-      )
-    `);
-    console.log('Bookings table initialized');
-  } catch (err) {
-    console.error('Error initializing database:', err);
-  }
-};
 
 // Аутентификация
 const authenticate = async (req, res, next) => {
@@ -104,7 +74,7 @@ app.post('/bookings', authenticate, async (req, res) => {
     }
     // Проверка занятой даты
     const [existingBookings] = await pool.query(
-      `SELECT id FROM bookings 
+      `SELECT id FROM booking.bookings 
        WHERE type = ? AND ${type === 'house' ? 'house_id' : 'gazebo_id'} = ? 
        AND booking_date = ? AND status IN ('pending', 'confirmed')`,
       [type, item_id, booking_date]
@@ -113,7 +83,7 @@ app.post('/bookings', authenticate, async (req, res) => {
       return res.status(400).json({ error: 'Дата уже забронирована' });
     }
     const [result] = await pool.query(
-      `INSERT INTO bookings (user_id, type, ${type === 'house' ? 'house_id' : 'gazebo_id'}, booking_date, status) 
+      `INSERT INTO booking.bookings (user_id, type, ${type === 'house' ? 'house_id' : 'gazebo_id'}, booking_date, status) 
        VALUES (?, ?, ?, ?, ?)`,
       [req.user.id, type, item_id, booking_date, 'pending']
     );
@@ -134,7 +104,7 @@ app.get('/bookings/dates', async (req, res) => {
       return res.status(400).json({ error: 'Недопустимый тип' });
     }
     const [bookings] = await pool.query(
-      `SELECT booking_date FROM bookings 
+      `SELECT booking_date FROM booking.bookings 
        WHERE type = ? AND ${type === 'house' ? 'house_id' : 'gazebo_id'} = ? 
        AND status IN ('pending', 'confirmed')`,
       [type, item_id]
@@ -150,7 +120,7 @@ app.get('/bookings/dates', async (req, res) => {
 app.get('/bookings', authenticate, async (req, res) => {
   try {
     const [bookings] = await pool.query(
-      'SELECT * FROM bookings WHERE user_id = ?',
+      'SELECT * FROM booking.bookings WHERE user_id = ?',
       [req.user.id]
     );
     res.json(bookings);
@@ -164,14 +134,14 @@ app.get('/bookings/all', authenticateAdmin, async (req, res) => {
   try {
     const [bookings] = await pool.query(`
       SELECT b.id, b.user_id, b.type, b.house_id, b.gazebo_id, b.booking_date, b.status, b.created_at, u.email
-      FROM bookings b
-      JOIN pobeda_auth.users u ON b.user_id = u.id
+      FROM booking.bookings b
+      JOIN auth.users u ON b.user_id = u.id
     `);
     const enrichedBookings = await Promise.all(bookings.map(async booking => {
       const itemId = booking.type === 'house' ? booking.house_id : booking.gazebo_id;
       const endpoint = booking.type === 'house' ? 'houses' : 'gazebos';
       try {
-        const response = await fetch(`http://localhost:3003/${endpoint}/${itemId}`);
+        const response = await fetch(`${process.env.ADMIN_SERVICE_URL}/${endpoint}/${itemId}`);
         const item = await response.json();
         if (!response.ok) throw new Error('Объект не найден');
         return {
@@ -201,7 +171,7 @@ app.put('/bookings/:id', authenticateAdmin, async (req, res) => {
       return res.status(400).json({ error: 'Недопустимый статус' });
     }
     const [result] = await pool.query(
-      'UPDATE bookings SET status = ? WHERE id = ?',
+      'UPDATE booking.bookings SET status = ? WHERE id = ?',
       [status, req.params.id]
     );
     if (result.affectedRows === 0) {
@@ -218,7 +188,7 @@ app.delete('/bookings/:id', authenticate, async (req, res) => {
   try {
     const bookingId = req.params.id;
     const [result] = await pool.query(
-      'UPDATE bookings SET status = ? WHERE id = ? AND user_id = ? AND status != ?',
+      'UPDATE booking.bookings SET status = ? WHERE id = ? AND user_id = ? AND status != ?',
       ['cancelled', bookingId, req.user.id, 'cancelled']
     );
     if (result.affectedRows === 0) {
@@ -230,7 +200,9 @@ app.delete('/bookings/:id', authenticate, async (req, res) => {
   }
 });
 
-checkConnection().then(() => initDatabase()).then(() => {
-  const PORT = 3002;
-  app.listen(PORT, () => console.log(`Booking service running on port ${PORT}`));
+checkConnection().then(() => {
+  const PORT = process.env.PORT || 3002;
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server running on port ${PORT}`);
+  });
 }).catch(err => console.error('Startup error:', err));
