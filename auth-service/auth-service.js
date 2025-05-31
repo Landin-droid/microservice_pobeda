@@ -51,12 +51,12 @@ app.post('/register', async (req, res) => {
     if (!name || !surname || !email || !phone || !password) {
       return res.status(400).json({ error: 'Все поля обязательны' });
     }
-    const [existingUsers] = await pool.query('SELECT id FROM auth.users WHERE email = ?', [email]);
+    const {existingUsers} = await pool.query('SELECT id FROM auth.users WHERE email = ?', [email]);
     if (existingUsers.length > 0) {
       return res.status(400).json({ error: 'Email уже зарегистрирован' });
     }
     const hashedPassword = await bcrypt.hash(password, 10);
-    const [result] = await pool.query(
+    const {result} = await pool.query(
       'INSERT INTO auth.users (name, surname, email, phone, password, role) VALUES (?, ?, ?, ?, ?, ?)',
       [name, surname, email, phone, hashedPassword, 'user']
     );
@@ -73,7 +73,7 @@ app.post('/login', async (req, res) => {
     if (!email || !password) {
       return res.status(400).json({ error: 'Email и пароль обязательны' });
     }
-    const [users] = await pool.query('SELECT * FROM auth.users WHERE email = ?', [email]);
+    const {users} = await pool.query('SELECT * FROM auth.users WHERE email = ?', [email]);
     if (users.length === 0) {
       return res.status(401).json({ error: 'Неверный email или пароль' });
     }
@@ -96,7 +96,7 @@ app.post('/login', async (req, res) => {
 // Получение профиля
 app.get('/profile', authenticate, async (req, res) => {
   try {
-    const [users] = await pool.query('SELECT id, name, surname, email, phone, role FROM auth.users WHERE id = ?', [req.user.id]);
+    const {users} = await pool.query('SELECT id, name, surname, email, phone, role FROM auth.users WHERE id = ?', [req.user.id]);
     if (users.length === 0) return res.status(404).json({ error: 'Пользователь не найден' });
     res.json(users[0]);
   } catch (error) {
@@ -111,11 +111,11 @@ app.put('/profile', authenticate, async (req, res) => {
     if (!name || !surname || !email || !phone) {
       return res.status(400).json({ error: 'Все поля обязательны' });
     }
-    const [existingUsers] = await pool.query('SELECT id FROM auth.users WHERE email = ? AND id != ?', [email, req.user.id]);
+    const {existingUsers} = await pool.query('SELECT id FROM auth.users WHERE email = ? AND id != ?', [email, req.user.id]);
     if (existingUsers.length > 0) {
       return res.status(400).json({ error: 'Email уже используется' });
     }
-    const [result] = await pool.query(
+    const {result} = await pool.query(
       'UPDATE auth.users SET name = ?, surname = ?, email = ?, phone = ? WHERE id = ?',
       [name, surname, email, phone, req.user.id]
     );

@@ -112,7 +112,7 @@ app.delete('/houses/:id', authenticateAdmin, async (req, res) => {
 // Получение всех беседок
 app.get('/gazebos', async (req, res) => {
   try {
-    const [gazebos] = await pool.query('SELECT * FROM booking_admin.gazebos');
+    const {gazebos} = await pool.query('SELECT * FROM booking_admin.gazebos');
     console.log(gazebos);
     res.json(gazebos);
   } catch (error) {
@@ -123,7 +123,7 @@ app.get('/gazebos', async (req, res) => {
 // Получение беседки по ID
 app.get('/gazebos/:id', async (req, res) => {
   try {
-    const [gazebos] = await pool.query('SELECT * FROM booking_admin.gazebos WHERE id = ?', [req.params.id]);
+    const {gazebos} = await pool.query('SELECT * FROM booking_admin.gazebos WHERE id = ?', [req.params.id]);
     if (gazebos.length === 0) return res.status(404).json({ error: 'Беседка не найдена' });
     res.json(gazebos[0]);
   } catch (error) {
@@ -136,7 +136,7 @@ app.post('/gazebos', authenticateAdmin, async (req, res) => {
   try {
     const { name, price, people_amount, electricity, grill, images } = req.body;
     if (!name || !price || !people_amount) return res.status(400).json({ error: 'Имя, цена и количество человек обязательны' });
-    const [result] = await pool.query(
+    const {result} = await pool.query(
       'INSERT INTO booking_admin.gazebos (name, price, people_amount, electricity, grill, images) VALUES (?, ?, ?, ?, ?, ?)',
       [name, price, people_amount, !!electricity, !!grill, images ? JSON.stringify(images) : null]
     );
@@ -151,7 +151,7 @@ app.put('/gazebos/:id', authenticateAdmin, async (req, res) => {
   try {
     const { name, price, people_amount, electricity, grill, images } = req.body;
     if (!name || !price || !people_amount) return res.status(400).json({ error: 'Имя, цена и количество человек обязательны' });
-    const [result] = await pool.query(
+    const {result} = await pool.query(
       'UPDATE booking_admin.gazebos SET name = ?, price = ?, people_amount = ?, electricity = ?, grill = ?, images = ? WHERE id = ?',
       [name, price, people_amount, !!electricity, !!grill, images ? JSON.stringify(images) : null, req.params.id]
     );
@@ -165,7 +165,7 @@ app.put('/gazebos/:id', authenticateAdmin, async (req, res) => {
 // Удаление беседки
 app.delete('/gazebos/:id', authenticateAdmin, async (req, res) => {
   try {
-    const [result] = await pool.query('DELETE FROM booking_admin.gazebos WHERE id = ?', [req.params.id]);
+    const {result} = await pool.query('DELETE FROM booking_admin.gazebos WHERE id = ?', [req.params.id]);
     if (result.affectedRows === 0) return res.status(404).json({ error: 'Беседка не найдена' });
     res.json({ message: 'Беседка удалена' });
   } catch (error) {

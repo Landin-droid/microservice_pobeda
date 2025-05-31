@@ -82,7 +82,7 @@ app.post('/bookings', authenticate, async (req, res) => {
     if (existingBookings.length > 0) {
       return res.status(400).json({ error: 'Дата уже забронирована' });
     }
-    const [result] = await pool.query(
+    const {result} = await pool.query(
       `INSERT INTO booking.bookings (user_id, type, ${type === 'house' ? 'house_id' : 'gazebo_id'}, booking_date, status) 
        VALUES (?, ?, ?, ?, ?)`,
       [req.user.id, type, item_id, booking_date, 'pending']
@@ -103,7 +103,7 @@ app.get('/bookings/dates', async (req, res) => {
     if (!['house', 'gazebo'].includes(type)) {
       return res.status(400).json({ error: 'Недопустимый тип' });
     }
-    const [bookings] = await pool.query(
+    const {bookings} = await pool.query(
       `SELECT booking_date FROM booking.bookings 
        WHERE type = ? AND ${type === 'house' ? 'house_id' : 'gazebo_id'} = ? 
        AND status IN ('pending', 'confirmed')`,
@@ -119,7 +119,7 @@ app.get('/bookings/dates', async (req, res) => {
 // Получение бронирований пользователя
 app.get('/bookings', authenticate, async (req, res) => {
   try {
-    const [bookings] = await pool.query(
+    const {bookings} = await pool.query(
       'SELECT * FROM booking.bookings WHERE user_id = ?',
       [req.user.id]
     );
@@ -132,7 +132,7 @@ app.get('/bookings', authenticate, async (req, res) => {
 // Получение всех бронирований (админ)
 app.get('/bookings/all', authenticateAdmin, async (req, res) => {
   try {
-    const [bookings] = await pool.query(`
+    const {bookings} = await pool.query(`
       SELECT b.id, b.user_id, b.type, b.house_id, b.gazebo_id, b.booking_date, b.status, b.created_at, u.email
       FROM booking.bookings b
       JOIN auth.users u ON b.user_id = u.id
@@ -170,7 +170,7 @@ app.put('/bookings/:id', authenticateAdmin, async (req, res) => {
     if (!['pending', 'confirmed', 'cancelled'].includes(status)) {
       return res.status(400).json({ error: 'Недопустимый статус' });
     }
-    const [result] = await pool.query(
+    const {result} = await pool.query(
       'UPDATE booking.bookings SET status = ? WHERE id = ?',
       [status, req.params.id]
     );
@@ -187,7 +187,7 @@ app.put('/bookings/:id', authenticateAdmin, async (req, res) => {
 app.delete('/bookings/:id', authenticate, async (req, res) => {
   try {
     const bookingId = req.params.id;
-    const [result] = await pool.query(
+    const {result} = await pool.query(
       'UPDATE booking.bookings SET status = ? WHERE id = ? AND user_id = ? AND status != ?',
       ['cancelled', bookingId, req.user.id, 'cancelled']
     );
