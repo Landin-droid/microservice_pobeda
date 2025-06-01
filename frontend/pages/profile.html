@@ -999,6 +999,7 @@
 
         try {
           images = imagesInput ? JSON.parse(imagesInput) : [];
+          console.log(images);
           if (!Array.isArray(images) || images.some(img => typeof img !== 'string' || img.trim() === '')) {
             throw new Error('Поле изображения должен быть массивом непустых строк');
           }
