@@ -1034,6 +1034,7 @@
         }
 
         const token = Cookies.get('jwt_token');
+        console.log(JSON.stringify(body));
         try {
           const response = await fetch(`${API_URL.admin}/${type}s/${id}`, {
             method: 'PUT',
