@@ -46,6 +46,16 @@ const authenticateAdmin = async (req, res, next) => {
   }
 };
 
+// Валидация JSON
+function isValidJson(data) {
+  try {
+    JSON.stringify(data); // Проверяем, можно ли сериализовать
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 // Получение всех домиков
 app.get('/houses', async (req, res) => {
   try {
@@ -90,16 +100,29 @@ app.post('/houses', authenticateAdmin, async (req, res) => {
 app.put('/houses/:id', authenticateAdmin, async (req, res) => {
   try {
     const { name, price, people_amount, water_supply, electricity, bathroom, fridge, teapot, microwave_oven, images } = req.body;
-    if (!name || !price || !people_amount) return res.status(400).json({ error: 'Имя, цена и количество человек обязательны' });
-    const { rowCount } = await pool.query(
-      'UPDATE booking_admin.houses SET name = $1, price = $2, people_amount = $3, water_supply = $4, electricity = $5, bathroom = $6, fridge = $7, teapot = $8, microwave_oven = $9, images = $10 WHERE id = $11',
-      [name, price, people_amount, !!water_supply, !!electricity, !!bathroom, !!fridge, !!teapot, !!microwave_oven, images ? images : null, req.params.id]
+    if (!name || typeof price !== 'number' || !Number.isInteger(people_amount)) {
+      return res.status(400).json({ error: 'Имя, цена и количество человек обязательны' });
+    }
+    if (typeof water_supply !== 'boolean' || typeof electricity !== 'boolean' ||
+        typeof bathroom !== 'boolean' || typeof fridge !== 'boolean' ||
+        typeof teapot !== 'boolean' || typeof microwave_oven !== 'boolean') {
+      return res.status(400).json({ error: 'Некорректные булевы значения для удобств' });
+    }
+    if (!images || !Array.isArray(images) || images.some(img => typeof img !== 'string')) {
+      return res.status(400).json({ error: 'Поле images должно быть массивом строк' });
+    }
+    if (!isValidJson(images)) {
+      return res.status(400).json({ error: 'Некорректный JSON в поле images' });
+    }
+    const { rows } = await pool.query(
+      `UPDATE booking_admin.houses SET name = $1, price = $2, people_amount = $3, water_supply = $4, electricity = $5, bathroom = $6, fridge = $7, teapot = $8, microwave_oven = $9, images = $10 WHERE id = $11 RETURNING *`,
+      [name, price, people_amount, water_supply, electricity, bathroom, fridge, teapot, microwave_oven, images, req.params.id]
     );
-    if (rowCount === 0) return res.status(404).json({ error: 'Дом не найден' });
-    res.json({ message: 'Дом обновлён' });
+    if (rows === 0) return res.status(404).json({ error: 'Дом не найден' });
+    res.json({ message: 'Дом обновлён', house: rows[0] });
   } catch (error) {
     console.error('Error updating house:', error.message);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: `Ошибка сервера: ${error.message}` });
   }
 });
 
@@ -159,16 +182,30 @@ app.post('/gazebos', authenticateAdmin, async (req, res) => {
 app.put('/gazebos/:id', authenticateAdmin, async (req, res) => {
   try {
     const { name, price, people_amount, electricity, grill, images } = req.body;
-    if (!name || !price || !people_amount) return res.status(400).json({ error: 'Имя, цена и количество человек обязательны' });
-    const { rowCount } = await pool.query(
-      'UPDATE booking_admin.gazebos SET name = $1, price = $2, people_amount = $3, electricity = $4, grill = $5, images = $6 WHERE id = $7',
-      [name, price, people_amount, !!electricity, !!grill, images ? images : null, req.params.id]
+
+    // Валидация входных данных
+    if (!name || typeof price !== 'number' || !Number.isInteger(people_amount)) {
+      return res.status(400).json({ error: 'Имя, цена и количество человек обязательны' });
+    }
+    if (typeof electricity !== 'boolean' || typeof grill !== 'boolean') {
+      return res.status(400).json({ error: 'Некорректные булевы значения для удобств' });
+    }
+    if (!images || !Array.isArray(images) || images.some(img => typeof img !== 'string')) {
+      return res.status(400).json({ error: 'Поле images должно быть массивом строк' });
+    }
+    if (!isValidJson(images)) {
+      return res.status(400).json({ error: 'Некорректный JSON в поле images' });
+    }
+
+    const { rows } = await pool.query(
+      `UPDATE booking_admin.gazebos SET name = $1, price = $2, people_amount = $3, electricity = $4, grill = $5, images = $6 WHERE id = $7 RETURNING *`,
+      [name, price, people_amount, electricity, grill, images, req.params.id]
     );
-    if (rowCount === 0) return res.status(404).json({ error: 'Беседка не найдена' });
+    if (rows === 0) return res.status(404).json({ error: 'Беседка не найдена' });
     res.json({ message: 'Беседка обновлена' });
   } catch (error) {
     console.error('Error updating gazebo:', error.message);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: `Ошибка сервера: ${error.message}` });
   }
 });
 
