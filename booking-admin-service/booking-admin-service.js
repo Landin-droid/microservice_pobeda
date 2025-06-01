@@ -110,7 +110,7 @@ app.post('/houses', authenticateAdmin, async (req, res) => {
 
     const { rows } = await pool.query(
       `INSERT INTO booking_admin.houses (name, price, people_amount, water_supply, electricity, bathroom, fridge, teapot, microwave_oven, images) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id`,
-      [name, price, people_amount, !!water_supply, !!electricity, !!bathroom, !!fridge, !!teapot, !!microwave_oven, images ? images : null]
+      [name, price, people_amount, water_supply, electricity, bathroom, fridge, teapot, microwave_oven, images ? images : null]
     );
     res.status(201).json({ message: 'Дом создан', id: rows[0].id });
   } catch (error) {
@@ -139,10 +139,12 @@ app.put('/houses/:id', authenticateAdmin, async (req, res) => {
     if (!isValidJson(images)) {
       return res.status(400).json({ error: 'Некорректный JSON в поле images' });
     }
-    
+
+    const imagesJson = JSON.stringify(images);
+
     const { rows } = await pool.query(
       `UPDATE booking_admin.houses SET name = $1, price = $2, people_amount = $3, images = $4, water_supply = $5, electricity = $6, bathroom = $7, fridge = $8, teapot = $9, microwave_oven = $10 WHERE id = $11 RETURNING *`,
-      [name, price, people_amount, images, water_supply, electricity, bathroom, fridge, teapot, microwave_oven, req.params.id]
+      [name, price, people_amount, imagesJson, water_supply, electricity, bathroom, fridge, teapot, microwave_oven, req.params.id]
     );
     if (rows.length === 0) return res.status(404).json({ error: 'Дом не найден' });
     res.json({ message: 'Дом обновлён', house: rows[0] });
@@ -237,9 +239,11 @@ app.put('/gazebos/:id', authenticateAdmin, async (req, res) => {
       return res.status(400).json({ error: 'Некорректный JSON в поле images' });
     }
 
+    const imagesJson = JSON.stringify(images); // Сериализуем в строку JSON
+
     const { rows } = await pool.query(
       `UPDATE booking_admin.gazebos SET name = $1, price = $2, people_amount = $3, images = $4, electricity = $5, grill = $6 WHERE id = $7 RETURNING *`,
-      [name, price, people_amount, images, electricity, grill, req.params.id]
+      [name, price, people_amount, imagesJson, electricity, grill, req.params.id]
     );
     if (rows === 0) return res.status(404).json({ error: 'Беседка не найдена' });
     res.json({ message: 'Беседка обновлена' });
