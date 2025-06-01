@@ -16,7 +16,8 @@ app.use(cors({ origin: process.env.FRONTEND_URL || '*' }));
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false }
+  ssl: { rejectUnauthorized: false },
+  client_encoding: 'UTF8'
 });
 
 // Проверка соединения

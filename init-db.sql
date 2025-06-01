@@ -1,8 +1,10 @@
 -- Создание базы данных
-CREATE DATABASE IF NOT EXISTS pobeda;
+CREATE DATABASE IF NOT EXISTS pobeda_db_rim7 WITH ENCODING 'UTF8' TEMPLATE template0;
 
 -- Подключение к базе
-\c pobeda_db
+\c pobeda_db_rim7
+
+SET client_encoding = 'UTF8';
 
 -- Создание схем
 CREATE SCHEMA IF NOT EXISTS auth;
@@ -64,6 +66,8 @@ CREATE TABLE booking.bookings (
     (type = 'gazebo' AND gazebo_id IS NOT NULL AND house_id IS NULL)
   )
 );
+
+TRUNCATE TABLE booking.bookings, booking_admin.houses, booking_admin.gazebos, auth.users RESTART IDENTITY CASCADE;
 
 -- Вставка данных
 INSERT INTO auth.users (name, surname, email, phone, password, role)
