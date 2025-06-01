@@ -776,7 +776,7 @@
         li.className = 'item';
         li.innerHTML = `
           <span>${item.type === 'house' ? 'Домик' : 'Беседка'}: ${item.name}, Цена: ${item.price} руб., Человек: ${item.people_amount}, ${amenities}</span>
-          <button class="btn btn-warning" onclick="editItem('${item.type}', ${item.id}, ${JSON.stringify(item)})">Редактировать</button>
+          <button class="btn btn-warning" onclick='editItem("${item.type}", ${item.id}, ${JSON.stringify(item)})'>Редактировать</button>
           <button class="btn btn-danger" onclick="deleteItem('${item.type}', ${item.id})">Удалить</button>
         `;
         list.appendChild(li);
