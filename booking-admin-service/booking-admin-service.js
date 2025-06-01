@@ -56,6 +56,13 @@ function isValidJson(data) {
   }
 }
 
+// Валидация images
+function validateImages(images) {
+  if (!images) return false;
+  if (!Array.isArray(images)) return false;
+  return images.every(img => typeof img === 'string' && img.trim() !== '');
+}
+
 // Получение всех домиков
 app.get('/houses', async (req, res) => {
   try {
@@ -84,9 +91,25 @@ app.get('/houses/:id', async (req, res) => {
 app.post('/houses', authenticateAdmin, async (req, res) => {
   try {
     const { name, price, people_amount, water_supply, electricity, bathroom, fridge, teapot, microwave_oven, images } = req.body;
-    if (!name || !price || !people_amount) return res.status(400).json({ error: 'Имя, цена и количество человек обязательны' });
+    
+    // Валидация
+    if (!name || typeof price !== 'number' || !Number.isInteger(people_amount)) {
+      return res.status(400).json({ error: 'Имя, цена и количество человек обязательны' });
+    }
+    if (typeof water_supply !== 'boolean' || typeof electricity !== 'boolean' ||
+        typeof bathroom !== 'boolean' || typeof fridge !== 'boolean' ||
+        typeof teapot !== 'boolean' || typeof microwave_oven !== 'boolean') {
+      return res.status(400).json({ error: 'Некорректные булевы значения для удобств' });
+    }
+    if (!validateImages(images)) {
+      return res.status(400).json({ error: 'Поле images должно быть массивом непустых строк' });
+    }
+    if (!isValidJson(images)) {
+      return res.status(400).json({ error: 'Некорректный JSON в поле images' });
+    }
+
     const { rows } = await pool.query(
-      'INSERT INTO booking_admin.houses (name, price, people_amount, water_supply, electricity, bathroom, fridge, teapot, microwave_oven, images) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id',
+      `INSERT INTO booking_admin.houses (name, price, people_amount, water_supply, electricity, bathroom, fridge, teapot, microwave_oven, images) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id`,
       [name, price, people_amount, !!water_supply, !!electricity, !!bathroom, !!fridge, !!teapot, !!microwave_oven, images ? images : null]
     );
     res.status(201).json({ message: 'Дом создан', id: rows[0].id });
@@ -100,6 +123,8 @@ app.post('/houses', authenticateAdmin, async (req, res) => {
 app.put('/houses/:id', authenticateAdmin, async (req, res) => {
   try {
     const { name, price, people_amount, water_supply, electricity, bathroom, fridge, teapot, microwave_oven, images } = req.body;
+    
+    // Валидация
     if (!name || typeof price !== 'number' || !Number.isInteger(people_amount)) {
       return res.status(400).json({ error: 'Имя, цена и количество человек обязательны' });
     }
@@ -108,17 +133,18 @@ app.put('/houses/:id', authenticateAdmin, async (req, res) => {
         typeof teapot !== 'boolean' || typeof microwave_oven !== 'boolean') {
       return res.status(400).json({ error: 'Некорректные булевы значения для удобств' });
     }
-    if (!images || !Array.isArray(images) || images.some(img => typeof img !== 'string')) {
-      return res.status(400).json({ error: 'Поле images должно быть массивом строк' });
+    if (!validateImages(images)) {
+      return res.status(400).json({ error: 'Поле images должно быть массивом непустых строк' });
     }
     if (!isValidJson(images)) {
       return res.status(400).json({ error: 'Некорректный JSON в поле images' });
     }
+    
     const { rows } = await pool.query(
       `UPDATE booking_admin.houses SET name = $1, price = $2, people_amount = $3, water_supply = $4, electricity = $5, bathroom = $6, fridge = $7, teapot = $8, microwave_oven = $9, images = $10 WHERE id = $11 RETURNING *`,
       [name, price, people_amount, water_supply, electricity, bathroom, fridge, teapot, microwave_oven, images, req.params.id]
     );
-    if (rows === 0) return res.status(404).json({ error: 'Дом не найден' });
+    if (rows.length === 0) return res.status(404).json({ error: 'Дом не найден' });
     res.json({ message: 'Дом обновлён', house: rows[0] });
   } catch (error) {
     console.error('Error updating house:', error.message);
@@ -166,9 +192,23 @@ app.get('/gazebos/:id', async (req, res) => {
 app.post('/gazebos', authenticateAdmin, async (req, res) => {
   try {
     const { name, price, people_amount, electricity, grill, images } = req.body;
-    if (!name || !price || !people_amount) return res.status(400).json({ error: 'Имя, цена и количество человек обязательны' });
+    
+    // Валидация
+    if (!name || typeof price !== 'number' || !Number.isInteger(people_amount)) {
+      return res.status(400).json({ error: 'Имя, цена и количество человек обязательны' });
+    }
+    if (typeof electricity !== 'boolean' || typeof grill !== 'boolean') {
+      return res.status(400).json({ error: 'Некорректные булевы значения для удобств' });
+    }
+    if (!validateImages(images)) {
+      return res.status(400).json({ error: 'Поле images должно быть массивом непустых строк' });
+    }
+    if (!isValidJson(images)) {
+      return res.status(400).json({ error: 'Некорректный JSON в поле images' });
+    }
+
     const { rows } = await pool.query(
-      'INSERT INTO booking_admin.gazebos (name, price, people_amount, electricity, grill, images) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id',
+      `INSERT INTO booking_admin.gazebos (name, price, people_amount, electricity, grill, images) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
       [name, price, people_amount, !!electricity, !!grill, images ? images : null]
     );
     res.status(201).json({ message: 'Беседка создана', id: rows[0].id });
@@ -183,15 +223,15 @@ app.put('/gazebos/:id', authenticateAdmin, async (req, res) => {
   try {
     const { name, price, people_amount, electricity, grill, images } = req.body;
 
-    // Валидация входных данных
+    // Валидация
     if (!name || typeof price !== 'number' || !Number.isInteger(people_amount)) {
       return res.status(400).json({ error: 'Имя, цена и количество человек обязательны' });
     }
     if (typeof electricity !== 'boolean' || typeof grill !== 'boolean') {
       return res.status(400).json({ error: 'Некорректные булевы значения для удобств' });
     }
-    if (!images || !Array.isArray(images) || images.some(img => typeof img !== 'string')) {
-      return res.status(400).json({ error: 'Поле images должно быть массивом строк' });
+    if (!validateImages(images)) {
+      return res.status(400).json({ error: 'Поле images должно быть массивом непустых строк' });
     }
     if (!isValidJson(images)) {
       return res.status(400).json({ error: 'Некорректный JSON в поле images' });

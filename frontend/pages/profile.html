@@ -843,11 +843,8 @@
       document.getElementById('item-name').value = item.name;
       document.getElementById('item-price').value = item.price;
       document.getElementById('item-people-amount').value = item.people_amount;
-      document.getElementById('item-images').value = JSON.stringify(item.images || []);
-
-      // Убедись, что images — массив, и сериализуй его корректно
+      // Форматируем images с отступами
       document.getElementById('item-images').value = JSON.stringify(item.images || [], null, 2);
-
       if (type === 'house') {
         document.getElementById('house-water-supply').checked = item.water_supply;
         document.getElementById('house-electricity').checked = item.electricity;
@@ -866,17 +863,19 @@
         const messageEl = document.getElementById('add-item-message');
         const imagesInput = document.getElementById('item-images').value.trim();
         let images;
+
+        // Валидация JSON
         try {
           images = imagesInput ? JSON.parse(imagesInput) : [];
-          // Убедись, что images — массив строк
-          if (!Array.isArray(images) || images.some(img => typeof img !== 'string')) {
-            throw new Error('Поле изображений должно быть массивом строк');
+          if (!Array.isArray(images) || images.some(img => typeof img !== 'string' || img.trim() === '')) {
+            throw new Error('Поле изображения должен быть массивом непустых строк');
           }
         } catch (e) {
-          messageEl.textContent = 'Некорректный JSON в поле изображений';
+          messageEl.textContent = 'Ошибка: некорректный JSON в поле изображений. Пример: ["image1.jpg", "image2.jpg"]';
           messageEl.className = 'error';
           return;
         }
+
         const body = {
           name: document.getElementById('item-name').value,
           price: parseFloat(document.getElementById('item-price').value),
@@ -895,7 +894,7 @@
           body.grill = document.getElementById('gazebo-grill').checked;
         }
 
-        // Валидация остальных полей
+        // Валидация обязательных полей
         if (!body.name || isNaN(body.price) || isNaN(body.people_amount)) {
           messageEl.textContent = 'Заполните все обязательные поля (название, цена, количество человек)';
           messageEl.className = 'error';
@@ -911,7 +910,6 @@
             },
             body: JSON.stringify(body)
           });
-
           const data = await response.json();
           if (!response.ok) throw new Error(data.error || 'Ошибка обновления объекта');
           messageEl.textContent = 'Объект обновлён!';
