@@ -122,7 +122,7 @@ app.post('/houses', authenticateAdmin, async (req, res) => {
 // Обновление дома
 app.put('/houses/:id', authenticateAdmin, async (req, res) => {
   try {
-    const { name, price, people_amount, water_supply, electricity, bathroom, fridge, teapot, microwave_oven, images } = req.body;
+    const { name, price, people_amount, images, water_supply, electricity, bathroom, fridge, teapot, microwave_oven } = req.body;
     
     // Валидация
     if (!name || typeof price !== 'number' || !Number.isInteger(people_amount)) {
@@ -141,8 +141,8 @@ app.put('/houses/:id', authenticateAdmin, async (req, res) => {
     }
     
     const { rows } = await pool.query(
-      `UPDATE booking_admin.houses SET name = $1, price = $2, people_amount = $3, water_supply = $4, electricity = $5, bathroom = $6, fridge = $7, teapot = $8, microwave_oven = $9, images = $10 WHERE id = $11 RETURNING *`,
-      [name, price, people_amount, water_supply, electricity, bathroom, fridge, teapot, microwave_oven, images, req.params.id]
+      `UPDATE booking_admin.houses SET name = $1, price = $2, people_amount = $3, images = $4 water_supply = $5, electricity = $6, bathroom = $7, fridge = $8, teapot = $9, microwave_oven = $10 WHERE id = $11 RETURNING *`,
+      [name, price, people_amount, images, water_supply, electricity, bathroom, fridge, teapot, microwave_oven, req.params.id]
     );
     if (rows.length === 0) return res.status(404).json({ error: 'Дом не найден' });
     res.json({ message: 'Дом обновлён', house: rows[0] });
@@ -221,7 +221,7 @@ app.post('/gazebos', authenticateAdmin, async (req, res) => {
 // Обновление беседки
 app.put('/gazebos/:id', authenticateAdmin, async (req, res) => {
   try {
-    const { name, price, people_amount, electricity, grill, images } = req.body;
+    const { name, price, people_amount, images, electricity, grill } = req.body;
 
     // Валидация
     if (!name || typeof price !== 'number' || !Number.isInteger(people_amount)) {
@@ -238,8 +238,8 @@ app.put('/gazebos/:id', authenticateAdmin, async (req, res) => {
     }
 
     const { rows } = await pool.query(
-      `UPDATE booking_admin.gazebos SET name = $1, price = $2, people_amount = $3, electricity = $4, grill = $5, images = $6 WHERE id = $7 RETURNING *`,
-      [name, price, people_amount, electricity, grill, images, req.params.id]
+      `UPDATE booking_admin.gazebos SET name = $1, price = $2, people_amount = $3, images = $4 electricity = $5, grill = $6 WHERE id = $7 RETURNING *`,
+      [name, price, people_amount, images, electricity, grill, req.params.id]
     );
     if (rows === 0) return res.status(404).json({ error: 'Беседка не найдена' });
     res.json({ message: 'Беседка обновлена' });
