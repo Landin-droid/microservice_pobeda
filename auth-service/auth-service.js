@@ -13,7 +13,7 @@ app.use((req, res, next) => {
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
   next();
 });
-app.use(cors({ origin: process.env.FRONTEND_URL || '*' }));
+app.use(cors('*'));
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
