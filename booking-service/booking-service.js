@@ -83,10 +83,33 @@ app.post('/bookings', authenticate, async (req, res) => {
     if (existingBookings.length > 0) {
       return res.status(400).json({ error: 'Дата уже забронирована' });
     }
+
+    // Получение people_amount из соответствующей таблицы
+    let people_amount;
+    if (type === 'house') {
+      const { rows: house } = await pool.query(
+        `SELECT people_amount FROM booking_admin.houses WHERE id = $1`,
+        [item_id]
+      );
+      if (house.length === 0) {
+        return res.status(400).json({ error: 'Домик не найден' });
+      }
+      people_amount = house[0].people_amount;
+    } else {
+      const { rows: gazebo } = await pool.query(
+        `SELECT people_amount FROM booking_admin.gazebos WHERE id = $1`,
+        [item_id]
+      );
+      if (gazebo.length === 0) {
+        return res.status(400).json({ error: 'Беседка не найдена' });
+      }
+      people_amount = gazebo[0].people_amount;
+    }
+
     const { rows } = await pool.query(
-      `INSERT INTO booking.bookings (user_id, type, ${type === 'house' ? 'house_id' : 'gazebo_id'}, booking_date, status) 
-       VALUES ($1, $2, $3, $4, $5) RETURNING id`,
-      [req.user.id, type, item_id, booking_date, 'pending']
+      `INSERT INTO booking.bookings (user_id, type, ${type === 'house' ? 'house_id' : 'gazebo_id'}, booking_date, status, people_amount) 
+       VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
+      [req.user.id, type, item_id, booking_date, 'pending', people_amount]
     );
     res.status(201).json({ message: 'Бронирование создано', booking_id: rows[0].id });
   } catch (error) {
@@ -137,7 +160,7 @@ app.get('/bookings', authenticate, async (req, res) => {
 app.get('/bookings/all', authenticateAdmin, async (req, res) => {
   try {
     const { rows } = await pool.query(`
-      SELECT b.id, b.user_id, b.type, b.house_id, b.gazebo_id, b.booking_date, b.status, b.created_at, u.email
+      SELECT b.id, b.user_id, b.type, b.house_id, b.gazebo_id, b.booking_date b.status, b.people_amount, b.created_at, u.email
       FROM booking.bookings b
       JOIN auth.users u ON b.user_id = u.id
     `);

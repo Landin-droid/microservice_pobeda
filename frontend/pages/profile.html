@@ -196,6 +196,7 @@
     </header>
     <main class="main__content">
         <div class="container__main1">
+
             <!-- Форма входа -->
             <div id="login-form" class="card">
                 <h2 class="forms-h2">Вход</h2>
@@ -680,6 +681,7 @@
             }
           });
           const bookings = await response.json();
+          console.log(bookings);
           if (!response.ok) throw new Error(bookings.error || 'Ошибка получения брониров17аний');
           displayAllBookings(bookings);
         } catch (error) {

@@ -55,6 +55,7 @@ CREATE TABLE booking.bookings (
   type VARCHAR(10) CHECK (type IN ('house', 'gazebo')) NOT NULL,
   house_id INTEGER,
   gazebo_id INTEGER,
+  people_amount INTEGER NOT NULL,
   booking_date DATE NOT NULL,
   status VARCHAR(10) CHECK (status IN ('pending', 'confirmed', 'cancelled')) DEFAULT 'pending',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
