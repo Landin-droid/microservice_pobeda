@@ -304,10 +304,14 @@ body{
 
 /*Главная*/
 .forms-h2{
+    font-size: 2rem;
+    font-weight: bold;
     margin-bottom: calc(3px + (5 - 3) * ((100vw - 320px) / (1440 - 320)));
     font-size: calc(20px + (24 - 20) * ((100vw - 320px) / (1440 - 320)));
 }
 .profile-h3{
+    font-weight: 500;
+    margin: 1rem 0;
     font-size: calc(16px + (19 - 16) * ((100vw - 320px) / (1440 - 320)));
 }
 .hidden {
@@ -324,6 +328,7 @@ body{
 #bookings-list{
     list-style-position: inside;
 }
+
 .btn{
     font-size: calc(11px + (18 - 11) * ((100vw - 320px) / (1440 - 320)));
     background-color: #3dab3d;
@@ -334,10 +339,38 @@ body{
     border-radius: 10px;
     border: #000000 2px solid;
     font-weight: bold;
+    border: none;
 }
 
 .btn:hover{
     background-color: #009600;
+    color: white;
+}
+
+.btn:focus-visible {
+    color: white;
+    background-color: #009600;
+    box-shadow: 0 0 0 0.25rem rgba(138, 189, 255, 0.6);
+}
+
+.btn.btn-danger {
+    background-color: var(--danger-color);
+    color: white;
+}
+
+.btn.btn-danger:hover {
+    background-color: #c82333;
+    transform: translateY(-2px);
+}
+
+.btn.btn-warning {
+    background-color: #ffc107;
+    color: var(--text-color);
+}
+
+.btn.btn-warning:hover {
+    background-color: #e0a800;
+    transform: translateY(-2px);
 }
 
 .btn-delete{
@@ -349,6 +382,18 @@ body{
 
 .btn-delete:hover{
     background-color: #db0800;
+}
+
+.btn.btn-warning:focus-visible {
+    color: white;
+    background-color: #e0a800;
+    box-shadow: 0 0 0 0.25rem rgba(224, 168, 0, .5);
+}
+
+.btn.btn-danger:focus-visible {
+    color: white;
+    background-color: #c82333;
+    box-shadow: 0 0 0 0.25rem rgba(200, 35, 51, .5);
 }
 
 input {
@@ -378,7 +423,8 @@ li{
     background-color: var(--palitraBlue5Color);
     padding: calc(7px + (10 - 7) * ((100vw - 320px) / (1440 - 320)));
     border-radius: 10px;
-    border: 3px solid var(--palitraGreen2Color);
+    border: none;
+    outline: none;
 }
 @media (max-width: 330px){
     .show-register,
@@ -388,14 +434,29 @@ li{
 }
 .show-register:hover,
 .show-login:hover{
-    color: #6f6f6f;
+    background-color: var(--palitraBlue3Color);
     cursor: pointer;
 }
+
+.show-register:focus-visible,
+.show-login:focus-visible{
+    background-color: var(--palitraBlue3Color);
+    box-shadow: 0 0 0 0.25rem rgba(0, 150, 0, .5);
+}
+
+.footer-auth-card {
+    display: flex;
+    flex-direction: row;
+    gap: 1em;
+    align-items: center;
+}
+
 .login-no-account-p,
 .register-no-account-p{
+    margin: 0;
     font-size: calc(14px + (18 - 14) * ((100vw - 320px) / (1440 - 320)));
     color: #000000;
-    margin-top: calc(10px + (15 - 10) * ((100vw - 320px) / (1440 - 320)));
+    border: none;
 }
 /*Подвал сайта*/
 .footer{
