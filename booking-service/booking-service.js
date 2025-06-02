@@ -160,7 +160,7 @@ app.get('/bookings', authenticate, async (req, res) => {
 app.get('/bookings/all', authenticateAdmin, async (req, res) => {
   try {
     const { rows } = await pool.query(`
-      SELECT b.id, b.user_id, b.type, b.house_id, b.gazebo_id, b.booking_date b.status, b.people_amount, b.created_at, u.email
+      SELECT b.id, b.user_id, b.type, b.house_id, b.gazebo_id, b.booking_date, b.status, b.people_amount, b.created_at, u.email
       FROM booking.bookings b
       JOIN auth.users u ON b.user_id = u.id
     `);
