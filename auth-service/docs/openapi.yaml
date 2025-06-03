@@ -1,0 +1,1244 @@
+openapi: 3.0.3
+info:
+  title: Pobeda Microservices API
+  description: API для микросервисов базы отдыха «Победа», включающих управление пользователями, бронированиями и объектами (домиками и беседками).
+  version: 1.0.0
+servers:
+  - url: https://auth-service-g23m.onrender.com
+    description: Auth Service
+  - url: https://booking-service-g1ea.onrender.com
+    description: Booking Service
+  - url: https://booking-admin-service.onrender.com
+    description: Booking Admin Service
+tags:
+  - name: Auth_Service
+    description: Операции, связанные с авторизацией и управлением пользователями
+  - name: Booking_Service
+    description: Операции, связанные с бронированиями домиков и беседок
+  - name: Booking_Admin_Service
+    description: Операции для администрирования домиков и беседок
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Ошибка сервера
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Иван
+        surname:
+          type: string
+          example: Иванов
+        email:
+          type: string
+          format: email
+          example: ivan@example.com
+        phone:
+          type: string
+          example: +79123456789
+        role:
+          type: string
+          enum: [user, admin]
+          example: user
+    House:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Домик №1
+        price:
+          type: number
+          format: float
+          example: 3500.00
+        people_amount:
+          type: integer
+          example: 15
+        water_supply:
+          type: boolean
+          example: true
+        electricity:
+          type: boolean
+          example: true
+        bathroom:
+          type: boolean
+          example: false
+        fridge:
+          type: boolean
+          example: true
+        teapot:
+          type: boolean
+          example: true
+        microwave_oven:
+          type: boolean
+          example: false
+        images:
+          type: array
+          items:
+            type: string
+          example: ["../images/Живые фото/Домик1-1.jpeg"]
+        created_at:
+          type: string
+          format: date-time
+          example: 2025-06-03T15:18:00Z
+    Gazebo:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Беседка №1
+        price:
+          type: number
+          format: float
+          example: 2000.00
+        people_amount:
+          type: integer
+          example: 10
+        electricity:
+          type: boolean
+          example: true
+        grill:
+          type: boolean
+          example: true
+        images:
+          type: array
+          items:
+            type: string
+          example: ["../images/Живые фото/Беседка1-1.jpeg"]
+        created_at:
+          type: string
+          format: date-time
+          example: 2025-06-03T15:18:00Z
+    Booking:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        user_id:
+          type: integer
+          example: 1
+        type:
+          type: string
+          enum: [house, gazebo]
+          example: house
+        house_id:
+          type: integer
+          nullable: true
+          example: 1
+        gazebo_id:
+          type: integer
+          nullable: true
+          example: null
+        booking_date:
+          type: string
+          format: date
+          example: 2025-11-01
+        status:
+          type: string
+          enum: [pending, confirmed, cancelled]
+          example: pending
+        people_amount:
+          type: integer
+          example: 15
+        created_at:
+          type: string
+          format: date-time
+          example: 2025-06-03T15:18:00Z
+        email:
+          type: string
+          format: email
+          example: ivan@example.com
+        item_name:
+          type: string
+          example: Домик №1
+        item_price:
+          type: number
+          format: float
+          example: 3500.00
+paths:
+  # Auth Service
+  /register:
+    post:
+      tags:
+        - Auth_Service
+      summary: Регистрация пользователя
+      description: Создаёт нового пользователя с ролью "user". Пароль хешируется с использованием bcrypt.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Иван
+                surname:
+                  type: string
+                  example: Иванов
+                email:
+                  type: string
+                  format: email
+                  example: ivan@example.com
+                phone:
+                  type: string
+                  example: +79123456789
+                password:
+                  type: string
+                  example: password123
+              required:
+                - name
+                - surname
+                - email
+                - phone
+                - password
+      responses:
+        '201':
+          description: Пользователь успешно зарегистрирован
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Пользователь зарегистрирован
+        '400':
+          description: Некорректные данные или email уже зарегистрирован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /login:
+    post:
+      tags:
+        - Auth_Service
+      summary: Вход пользователя
+      description: Аутентифицирует пользователя и возвращает JWT-токен, действительный 7 дней.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: ivan@example.com
+                password:
+                  type: string
+                  example: password123
+              required:
+                - email
+                - password
+      responses:
+        '200':
+          description: Успешный вход
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        '400':
+          description: Email или пароль отсутствуют
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Неверный email или пароль
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /profile:
+    get:
+      tags:
+        - Auth_Service
+      summary: Получение профиля пользователя
+      description: Возвращает информацию о текущем пользователе на основе JWT-токена.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Профиль пользователя
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Неавторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Пользователь не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      tags:
+        - Auth_Service
+      summary: Обновление профиля пользователя
+      description: Обновляет данные пользователя (имя, фамилию, email, телефон). Email должен быть уникальным.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Иван
+                surname:
+                  type: string
+                  example: Иванов
+                email:
+                  type: string
+                  format: email
+                  example: ivan@example.com
+                phone:
+                  type: string
+                  example: +79123456789
+              required:
+                - name
+                - surname
+                - email
+                - phone
+      responses:
+        '200':
+          description: Профиль успешно обновлён
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Профиль обновлён
+        '400':
+          description: Некорректные данные или email уже используется
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Неавторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Пользователь не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  # Booking Admin Service
+  /houses:
+    get:
+      tags:
+        - Booking_Admin_Service
+      summary: Получение списка домиков
+      description: Возвращает список всех домиков, доступных на базе отдыха.
+      responses:
+        '200':
+          description: Список домиков
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/House'
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      tags:
+        - Booking_Admin_Service
+      summary: Создание нового домика
+      description: Добавляет новый домик в базу данных. Доступно только администраторам.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Домик №8
+                price:
+                  type: number
+                  format: float
+                  example: 3000.00
+                people_amount:
+                  type: integer
+                  example: 12
+                water_supply:
+                  type: boolean
+                  example: true
+                electricity:
+                  type: boolean
+                  example: true
+                bathroom:
+                  type: boolean
+                  example: false
+                fridge:
+                  type: boolean
+                  example: true
+                teapot:
+                  type: boolean
+                  example: true
+                microwave_oven:
+                  type: boolean
+                  example: false
+                images:
+                  type: array
+                  items:
+                    type: string
+                  example: ["../images/Живые фото/Домик8-1.jpeg"]
+              required:
+                - name
+                - price
+                - people_amount
+                - water_supply
+                - electricity
+                - bathroom
+                - fridge
+                - teapot
+                - microwave_oven
+      responses:
+        '201':
+          description: Домик успешно создан
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Домик создан
+                  id:
+                    type: integer
+                    example: 8
+        '400':
+          description: Некорректные данные или JSON для изображений
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Неавторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Доступ запрещён
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /houses/{id}:
+    get:
+      tags:
+        - Booking_Admin_Service
+      summary: Получение домика по ID
+      description: Возвращает информацию о конкретном домике.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: Информация о домике
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/House'
+        '404':
+          description: Домик не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      tags:
+        - Booking_Admin_Service
+      summary: Обновление домика
+      description: Обновляет данные о домике. Доступно только администраторам.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Домик №1
+                price:
+                  type: number
+                  format: float
+                  example: 3500.00
+                people_amount:
+                  type: integer
+                  example: 15
+                water_supply:
+                  type: boolean
+                  example: true
+                electricity:
+                  type: boolean
+                  example: true
+                bathroom:
+                  type: boolean
+                  example: false
+                fridge:
+                  type: boolean
+                  example: true
+                teapot:
+                  type: boolean
+                  example: true
+                microwave_oven:
+                  type: boolean
+                  example: false
+                images:
+                  type: array
+                  items:
+                    type: string
+                  example: ["../images/Живые фото/Домик1-1.jpeg"]
+              required:
+                - name
+                - price
+                - people_amount
+                - water_supply
+                - electricity
+                - bathroom
+                - fridge
+                - teapot
+                - microwave_oven
+      responses:
+        '200':
+          description: Домик успешно обновлён
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Дом обновлён
+                  house:
+                    $ref: '#/components/schemas/House'
+        '400':
+          description: Некорректные данные или JSON для изображений
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Неавторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Доступ запрещён
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Домик не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      tags:
+        - Booking_Admin_Service
+      summary: Удаление домика
+      description: Удаляет домик из базы данных. Доступно только администраторам.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: Домик успешно удалён
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Дом удалён
+        '401':
+          description: Неавторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Доступ запрещён
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Домик не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /gazebos:
+    get:
+      tags:
+        - Booking_Admin_Service
+      summary: Получение списка беседок
+      description: Возвращает список всех беседок, доступных на базе отдыха.
+      responses:
+        '200':
+          description: Список беседок
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Gazebo'
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      tags:
+        - Booking_Admin_Service
+      summary: Создание новой беседки
+      description: Добавляет новую беседку в базу данных. Доступно только администраторам.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Беседка №8
+                price:
+                  type: number
+                  format: float
+                  example: 1500.00
+                people_amount:
+                  type: integer
+                  example: 8
+                electricity:
+                  type: boolean
+                  example: true
+                grill:
+                  type: boolean
+                  example: true
+                images:
+                  type: array
+                  items:
+                    type: string
+                  example: ["../images/Живые фото/Беседка8-1.jpeg"]
+              required:
+                - name
+                - price
+                - people_amount
+                - electricity
+                - grill
+      responses:
+        '201':
+          description: Беседка успешно создана
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Беседка создана
+                  id:
+                    type: integer
+                    example: 8
+        '400':
+          description: Некорректные данные или JSON для изображений
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Неавторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Доступ запрещён
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /gazebos/{id}:
+    get:
+      tags:
+        - Booking_Admin_Service
+      summary: Получение беседки по ID
+      description: Возвращает информацию о конкретной беседке.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: Информация о беседке
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Gazebo'
+        '404':
+          description: Беседка не найдена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      tags:
+        - Booking_Admin_Service
+      summary: Обновление беседки
+      description: Обновляет данные о беседке. Доступно только администраторам.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Беседка №1
+                price:
+                  type: number
+                  format: float
+                  example: 2000.00
+                people_amount:
+                  type: integer
+                  example: 10
+                electricity:
+                  type: boolean
+                  example: true
+                grill:
+                  type: boolean
+                  example: true
+                images:
+                  type: array
+                  items:
+                    type: string
+                  example: ["../images/Живые фото/Беседка1-1.jpeg"]
+              required:
+                - name
+                - price
+                - people_amount
+                - electricity
+                - grill
+      responses:
+        '200':
+          description: Беседка успешно обновлена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Беседка обновлена
+        '400':
+          description: Некорректные данные или JSON для изображений
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Неавторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Доступ запрещён
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Беседка не найдена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      tags:
+        - Booking_Admin_Service
+      summary: Удаление беседки
+      description: Удаляет беседку из базы данных. Доступно только администраторам.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: Беседка успешно удалена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Беседка удалена
+        '401':
+          description: Неавторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Доступ запрещён
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Беседка не найдена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  # Booking Service
+  /bookings:
+    post:
+      tags:
+        - Booking_Service
+      summary: Создание бронирования
+      description: Создаёт новое бронирование домика или беседки для авторизованного пользователя.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                type:
+                  type: string
+                  enum: [house, gazebo]
+                  example: house
+                item_id:
+                  type: integer
+                  example: 1
+                booking_date:
+                  type: string
+                  format: date
+                  example: 2025-11-01
+              required:
+                - type
+                - item_id
+                - booking_date
+      responses:
+        '201':
+          description: Бронирование успешно создано
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Бронирование создано
+                  booking_id:
+                    type: integer
+                    example: 1
+        '400':
+          description: Некорректные данные, объект не найден или дата занята
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Неавторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    get:
+      tags:
+        - Booking_Service
+      summary: Получение бронирований пользователя
+      description: Возвращает список бронирований текущего пользователя.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Список бронирований
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Booking'
+        '401':
+          description: Неавторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /bookings/dates:
+    get:
+      tags:
+        - Booking_Service
+      summary: Получение занятых дат
+      description: Возвращает список занятых дат для указанного объекта (домика или беседки).
+      parameters:
+        - name: type
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [house, gazebo]
+            example: house
+        - name: item_id
+          in: query
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: Список занятых дат
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                  format: date
+                  example: 2025-11-01
+        '400':
+          description: Некорректные параметры
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /bookings/all:
+    get:
+      tags:
+        - Booking_Service
+      summary: Получение всех бронирований
+      description: Возвращает список всех бронирований с дополнительной информацией об объектах и пользователях. Доступно только администраторам.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Список всех бронирований
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Booking'
+        '401':
+          description: Неавторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Доступ запрещён
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /bookings/{id}:
+    put:
+      tags:
+        - Booking_Service
+      summary: Изменение статуса бронирования
+      description: Обновляет статус бронирования (pending, confirmed, cancelled). Доступно только администраторам.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [pending, confirmed, cancelled]
+                  example: confirmed
+              required:
+                - status
+      responses:
+        '200':
+          description: Статус бронирования успешно обновлён
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Статус брони обновлён
+        '400':
+          description: Некорректный статус
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Неавторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Доступ запрещён
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Бронирование не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      tags:
+        - Booking_Service
+      summary: Отмена бронирования
+      description: Отменяет бронирование, устанавливая статус "cancelled". Доступно только владельцу бронирования.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: Бронирование успешно отменено
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Бронирование отменено
+        '401':
+          description: Неавторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Бронирование не найдено или уже отменено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
