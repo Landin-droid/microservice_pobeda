@@ -4,6 +4,10 @@ const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
 const cors = require('cors');
 
+const swaggerUi = require('swagger-ui-express');
+const YAML = require('yamljs');
+const swaggerDocument = YAML.load('./docs/openapi.yaml');
+
 dotenv.config();
 
 const app = express();
@@ -13,6 +17,7 @@ app.use((req, res, next) => {
   next();
 });
 app.use(cors('*'));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
