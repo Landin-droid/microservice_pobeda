@@ -7,7 +7,7 @@ const cors = require('cors');
 
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
-const swaggerDocument = YAML.load('./docs/openapi.yaml');
+const swaggerDocument = YAML.load('../docs/openapi.yaml');
 
 dotenv.config();
 
